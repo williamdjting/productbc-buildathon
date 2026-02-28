@@ -1,6 +1,6 @@
 # buildathon-project
 
-# execute command
+# execute command in CLI
 export OPENAI_API_KEY="API_KEY"
 
 node classify-aeo.mjs sample-blog.md > sample-blog-aeo.json
