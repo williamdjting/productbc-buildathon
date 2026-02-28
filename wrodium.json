@@ -1,0 +1,68 @@
+{
+  "schema_version": "aeo-checklist-v1",
+  "article": {
+    "title": "The Anchor and The ID: How Wrodium and World Can Stabilize the AI Knowledge Economy",
+    "date": "2026-01-28",
+    "author": null,
+    "tags": null
+  },
+  "aeo_checklist_evaluation": {
+    "one_paragraph_answer_near_top": {
+      "status": "partial",
+      "reason": "There is an introductory section near the top that outlines main ideas about Wrodium, World, GEO, and reducing hallucinations but it is multiple paragraphs and somewhat dense rather than a concise 40-80 word single paragraph answer.",
+      "evidence": [
+        "L1-12: 'Generative Engine Optimization (GEO) increasingly rewards information that is structured...' to 'Publishing these claims in crawlable, schema-rich formats...'"
+      ]
+    },
+    "question_style_headings_present": {
+      "status": "yes",
+      "reason": "Multiple question-style headings appear throughout the article, indicating main topics and themes in question format.",
+      "evidence": [
+        "L36: 'Why hallucinations happen in enterprise knowledge'",
+        "L45: 'What “GEO-first” actually implies'",
+        "L222: 'FAQs'",
+        "L224: '1) Is this the same as building a knowledge graph?'",
+        "L229: '2) Will cryptographic attestations directly improve GEO rankings?'",
+        "L242: '3) How does this reduce “citation hallucinations” specifically?'",
+        "L262: '4) What should we publish first?'"
+      ]
+    },
+    "faq_or_howto_schema_present": {
+      "status": "partial",
+      "reason": "There is a clearly marked FAQ section with numbered questions and answers. However, no explicit FAQ or HowTo schema markup is present in markdown.",
+      "evidence": [
+        "L220-290: 'FAQs' section with multiple questions and answers"
+      ]
+    },
+    "definitions_consistent": {
+      "status": "yes",
+      "reason": "Key concepts such as Answer engine, Hallucination, Provenance, Freshness are clearly defined early on and used consistently throughout the article.",
+      "evidence": [
+        "L27-35: 'Definitions' section",
+        "Use of 'hallucination', 'provenance', 'freshness' is consistent across later sections"
+      ]
+    },
+    "page_fast_readable_accessible": {
+      "fast_page": {
+        "status": "not_evaluated",
+        "reason": "Page loading speed or performance cannot be inferred from markdown content."
+      },
+      "readable": {
+        "status": "partial",
+        "reason": "The article uses section headings, bullet points, and tables to aid readability but contains lengthy dense paragraphs that may hinder quick comprehension.",
+        "evidence": [
+          "Use of lists in 'Core concepts' and 'Implementation roadmap'",
+          "Some long dense paragraphs in introduction and explanation sections"
+        ]
+      },
+      "accessible": {
+        "status": "partial",
+        "reason": "The article structure with headings, lists, and tables suggests awareness of content accessibility, but no explicit accessibility markup or landmarks can be assessed from markdown alone.",
+        "evidence": [
+          "Multiple headings with ##",
+          "Bullet lists and tables for data presentation"
+        ]
+      }
+    }
+  }
+}

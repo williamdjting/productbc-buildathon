@@ -1,0 +1,76 @@
+{
+  "schema_version": "aeo-checklist-v1",
+  "article": {
+    "title": "The Anchor and The ID: How Wrodium and World Can Stabilize the AI Knowledge Economy",
+    "date": null,
+    "author": null,
+    "tags": null
+  },
+  "aeo_checklist_evaluation": {
+    "one_paragraph_answer_near_top": {
+      "status": "partial",
+      "reason": "There is a multi-sentence introduction explaining GEO and the Wrodium–World approach, but no concise single paragraph explicitly answering a single question in 40-80 words near the top.",
+      "evidence": [
+        "L2-9: 'Generative Engine Optimization (GEO) improves AI answer reliability by rewarding content ... making facts traceable, accountable, and easier for answer engines to trust and cite.'",
+        "L11-23: Introduction section explaining GEO shift and collaboration"
+      ]
+    },
+    "question_style_headings_present": {
+      "status": "yes",
+      "reason": "Multiple headings are phrased as questions, framing key article sections.",
+      "evidence": [
+        "L25: '## Introduction: What Is the Shift Toward GEO?'",
+        "L75: '## What Are the Core Concepts You Need for GEO Trust?'",
+        "L108: '## Why Do Hallucinations Happen in Enterprise Knowledge?'",
+        "L120: '## What Does “GEO-First” Actually Mean?'",
+        "L155: '## How Does the Wrodium–World Collaboration Work?'",
+        "L204: '## What Are Verified Claim Objects (VCOs)?'",
+        "L254: '## How Do Verified Claims Help Reduce Hallucinations?'",
+        "L270: '## How Can You Implement This? An Operational Roadmap'",
+        "L328: '## What Are Practical Design Patterns for GEO-Friendly Claims?'",
+        "L356: '## What Are the Benefits and Tradeoffs?'",
+        "L382: '## FAQs'",
+        "L415: '## Conclusion and Next Steps'"
+      ]
+    },
+    "faq_or_howto_schema_present": {
+      "status": "yes",
+      "reason": "A clearly marked FAQ section with numbered questions and answers is included; also the article provides explicit operational steps (HowTo) in roadmap sections.",
+      "evidence": [
+        "L382-413: '## FAQs' with six distinct question-answer pairs",
+        "L270-359: '## How Can You Implement This? An Operational Roadmap' describing phased implementation"
+      ]
+    },
+    "definitions_consistent": {
+      "status": "yes",
+      "reason": "Key concepts are defined clearly once in a dedicated definitions subsection and used consistently throughout the article.",
+      "evidence": [
+        "L79-89: '### Definitions' for answer engine, hallucination, provenance, freshness",
+        "Repeated and consistent use of these terms in later sections, e.g. 'Provenance', 'Freshness', 'Attestation'"
+      ]
+    },
+    "page_fast_readable_accessible": {
+      "fast_page": {
+        "status": "not_evaluated",
+        "reason": "Page load speed cannot be determined from markdown content alone."
+      },
+      "readable": {
+        "status": "yes",
+        "reason": "Content is well-structured with headings, lists, tables, and bullet points facilitating readability.",
+        "evidence": [
+          "Use of headings and subheadings throughout",
+          "Bullet lists in 'How Can You Implement This?' and 'What Are Practical Design Patterns...'",
+          "Tables: 'What Do Answer Engines Need? The Trust Stack' and 'Essential VCO Components'"
+        ]
+      },
+      "accessible": {
+        "status": "partial",
+        "reason": "The article uses semantic heading structure, tables, bullet lists, and consistent typography, but no explicit accessibility annotations or alt text for images (none present) can be verified from markdown alone.",
+        "evidence": [
+          "Semantic headers and clear structure (e.g., L25+, tables and bullet points)",
+          "No non-text content to evaluate accessibility features"
+        ]
+      }
+    }
+  }
+}
