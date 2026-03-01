@@ -2,73 +2,68 @@
   "schema_version": "aeo-checklist-v1",
   "article": {
     "title": "The Anchor and The ID: How Wrodium and World Can Stabilize the AI Knowledge Economy",
-    "date": null,
+    "date": "2026-01-28",
     "author": null,
     "tags": null
   },
   "aeo_checklist_evaluation": {
     "one_paragraph_answer_near_top": {
-      "status": "partial",
-      "reason": "There is a multi-sentence introduction explaining GEO and the Wrodium–World approach, but no concise single paragraph explicitly answering a single question in 40-80 words near the top.",
+      "status": "yes",
+      "reason": "The article begins with a clear, concise paragraph summarizing how Wrodium and World reduce AI hallucinations by publishing verified claims with provenance and structure.",
       "evidence": [
-        "L2-9: 'Generative Engine Optimization (GEO) improves AI answer reliability by rewarding content ... making facts traceable, accountable, and easier for answer engines to trust and cite.'",
-        "L11-23: Introduction section explaining GEO shift and collaboration"
+        "L3-9: 'Generative Engine Optimization (GEO)...making facts verifiable, fresh, and easier for answer engines to trust and cite.'"
       ]
     },
     "question_style_headings_present": {
       "status": "yes",
-      "reason": "Multiple headings are phrased as questions, framing key article sections.",
+      "reason": "Several headings are phrased as questions and mark clear topical sections.",
       "evidence": [
-        "L25: '## Introduction: What Is the Shift Toward GEO?'",
-        "L75: '## What Are the Core Concepts You Need for GEO Trust?'",
-        "L108: '## Why Do Hallucinations Happen in Enterprise Knowledge?'",
-        "L120: '## What Does “GEO-First” Actually Mean?'",
-        "L155: '## How Does the Wrodium–World Collaboration Work?'",
-        "L204: '## What Are Verified Claim Objects (VCOs)?'",
-        "L254: '## How Do Verified Claims Help Reduce Hallucinations?'",
-        "L270: '## How Can You Implement This? An Operational Roadmap'",
-        "L328: '## What Are Practical Design Patterns for GEO-Friendly Claims?'",
-        "L356: '## What Are the Benefits and Tradeoffs?'",
-        "L382: '## FAQs'",
-        "L415: '## Conclusion and Next Steps'"
+        "L91: 'Why hallucinations happen in enterprise knowledge'",
+        "L97: 'What “GEO-first” actually implies'",
+        "L266: 'FAQs'",
+        "L268: '1) Is this the same as building a knowledge graph?'",
+        "L271: '2) Will cryptographic attestations directly improve GEO rankings?'",
+        "L274: '3) How does this reduce “citation hallucinations” specifically?'",
+        "L277: '4) What should we publish first?'",
+        "L280: '5) Can we do this without exposing personal identity?'",
+        "L283: '6) How do we measure success?'"
       ]
     },
     "faq_or_howto_schema_present": {
       "status": "yes",
-      "reason": "A clearly marked FAQ section with numbered questions and answers is included; also the article provides explicit operational steps (HowTo) in roadmap sections.",
+      "reason": "A clearly marked FAQ section is present with multiple FAQ questions and answers.",
       "evidence": [
-        "L382-413: '## FAQs' with six distinct question-answer pairs",
-        "L270-359: '## How Can You Implement This? An Operational Roadmap' describing phased implementation"
+        "L266-288: Section titled 'FAQs' with numbered, question-style FAQ items"
       ]
     },
     "definitions_consistent": {
       "status": "yes",
-      "reason": "Key concepts are defined clearly once in a dedicated definitions subsection and used consistently throughout the article.",
+      "reason": "Key concepts such as 'Answer engine', 'Hallucination', 'Provenance', and 'Freshness' are defined early on and used consistently throughout the article.",
       "evidence": [
-        "L79-89: '### Definitions' for answer engine, hallucination, provenance, freshness",
-        "Repeated and consistent use of these terms in later sections, e.g. 'Provenance', 'Freshness', 'Attestation'"
+        "L38-45: Definitions section",
+        "Consistent usage thereafter (e.g. 'hallucination', 'provenance', 'freshness')"
       ]
     },
     "page_fast_readable_accessible": {
       "fast_page": {
         "status": "not_evaluated",
-        "reason": "Page load speed cannot be determined from markdown content alone."
+        "reason": "Page loading speed cannot be inferred from markdown content alone."
       },
       "readable": {
         "status": "yes",
-        "reason": "Content is well-structured with headings, lists, tables, and bullet points facilitating readability.",
+        "reason": "The content is organized with clear headings, bullet lists, tables, and concise language improving readability.",
         "evidence": [
-          "Use of headings and subheadings throughout",
-          "Bullet lists in 'How Can You Implement This?' and 'What Are Practical Design Patterns...'",
-          "Tables: 'What Do Answer Engines Need? The Trust Stack' and 'Essential VCO Components'"
+          "Multiple headings and bullet lists throughout",
+          "Use of tables (e.g. trust stack, field definitions)",
+          "Clear paragraph structure and numbered lists"
         ]
       },
       "accessible": {
         "status": "partial",
-        "reason": "The article uses semantic heading structure, tables, bullet lists, and consistent typography, but no explicit accessibility annotations or alt text for images (none present) can be verified from markdown alone.",
+        "reason": "Markdown headings and lists support basic accessibility, but no explicit accessibility metadata, alt text, or ARIA tags can be inferred from markdown.",
         "evidence": [
-          "Semantic headers and clear structure (e.g., L25+, tables and bullet points)",
-          "No non-text content to evaluate accessibility features"
+          "Use of semantic headings and tables",
+          "L221-222: 'Use structured data where it accurately fits the claim type.'"
         ]
       }
     }

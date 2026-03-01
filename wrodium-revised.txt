@@ -1,264 +1,319 @@
+---
 The Anchor and The ID: How Wrodium and World Can Stabilize the AI Knowledge Economy
 
-Generative Engine Optimization (GEO) improves AI answer reliability by rewarding content that is structured, current, and verifiable. Wrodium and World enable this by publishing verified claim objects that include clear entity bindings, strong provenance, time-bounded validity, and cryptographic attestations. This approach reduces hallucinations and citation errors, making facts traceable, accountable, and easier for answer engines to trust and cite.
+Generative Engine Optimization (GEO) increasingly rewards structured, current, and citation-safe information. Wrodium and World can reduce AI hallucinations by publishing verified claim objects with strong provenance, identity-backed accountability, and machine-readable structure. These claims are time-bounded, cryptographically attested, and delivered in crawlable, schema-rich formats, making facts verifiable, fresh, and easier for answer engines to trust and cite.
 
-## Introduction: What Is the Shift Toward GEO?
+Introduction
 
-AI search increasingly shifts from returning link lists to providing synthesized answers. This new environment means content creators compete not just to rank but to be the trusted source that answer engines select and summarize. Microsoft's guidance on Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO) reflects this change, emphasizing clarity, relevance, and machine-consumable data.
+AI search is shifting from lists of links to synthesized answers. In this environment, you are not only competing to rank. You are competing to become the source an answer engine selects, summarizes, and trusts. Microsoft’s Search guidance on Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO) reflects this shift toward machine-consumable clarity and relevance.
 
-However, hallucinations remain a key challenge. “Citation hallucination” occurs when an AI confidently gives an answer with weak, incorrect, or mismatched sourcing. Both OpenAI and Google acknowledge this risk and recommend verification for important facts.
+At the same time, hallucinations remain a practical risk. One common failure mode is “citation hallucination,” where an AI presents a confident answer with weak or mismatched sourcing. OpenAI has documented that even advanced models can produce incorrect content and that reliability remains an active area of work. Google also warns that generative AI features can produce inaccurate information and encourages verification for important topics.
 
-This article explores how a collaboration between Wrodium (a knowledge freshness and claim governance system) and World (an identity and attestation primitive) can create a GEO-first “knowledge layer.” Together, they can provide answer engines with verifiable, current, and attributable facts that reduce ambiguity and stale retrieval.
+This article focuses on a concrete collaboration thesis: Wrodium, as a knowledge freshness and claim governance system, and World, as an identity and attestation primitive, can together create a GEO-first “knowledge layer.” The goal is straightforward: give answer engines verifiable, current, and attributable facts that reduce ambiguity and stale retrieval.
 
-Secondary goals of this article include:
+Secondary intents this article also addresses:
 
-- How to structure and publish machine-readable claims for AI retrieval using schemas and endpoints.
-- How to design operational workflows covering ownership, approvals, and review SLAs.
+- How to structure and publish machine-readable claims for AI retrieval (schemas, chunking, and endpoints).
+- How to design an operational workflow (ownership, approvals, and review SLAs).
 - How to measure whether your GEO program reduces mis-citations and stale answers.
 
-## What Are the Core Concepts You Need for GEO Trust?
+Core concepts you need for GEO trust
 
-GEO means optimizing content so it’s included and trusted in AI-generated answers. The bottleneck is verifiability: answer engines prefer content that is easy to parse, unambiguous, and safe to cite. Microsoft’s AEO framework focuses on creating content that can be extracted and supplied as direct answers.
+GEO is often described as “optimizing for inclusion in AI answers.” In practice, the bottleneck is verifiability. Answer engines prefer sources that are easy to parse, unambiguous, and safe to cite. Microsoft’s AEO framing emphasizes creating content that can be extracted and used as answers.
 
-### Definitions
+Definitions
 
-- **Answer engine:** A system that generates synthesized responses instead of just links (e.g., Google AI Overviews).
-- **Hallucination:** Model output not grounded in reliable evidence or factually incorrect.
-- **Provenance:** Details on where a claim came from, who approved it, and its revision history.
-- **Freshness:** Recency of claim verification and the scheduled next review.
+- **Answer engine**: A search or assistant system that generates a synthesized response rather than returning only links. Google’s AI Overviews are a well-known example of this category.
 
-## Why Do Hallucinations Happen in Enterprise Knowledge?
+- **Hallucination**: A model output that is not grounded in reliable evidence or that is factually incorrect. OpenAI explicitly notes this risk in its documentation for generative models.
 
-Hallucinations typically stem from knowledge fragmentation, not deliberate misinformation. Pricing, eligibility, policies, and product specs often drift out of sync. Some pages update regularly while others stay stale. Support articles may change; marketing pages may not. PDFs linger without updates.
+- **Provenance**: Where a claim came from, who approved it, and how it changed over time.
 
-When an answer engine pulls snippets that conflict, it may blend them into an “average truth,” causing errors. Retrieval-augmented generation reduces but does not eliminate this, especially if the underlying content is outdated or contradictory. OpenAI warns models can still generate inaccurate content when inputs are incomplete or inconsistent.
+- **Freshness**: How recently a claim was verified against an authoritative source of truth, plus when it should be reviewed again.
 
-## What Does “GEO-First” Actually Mean?
+Why hallucinations happen in enterprise knowledge
 
-A GEO-first approach changes how you manage editorial content:
+In enterprise settings, hallucinations usually come from knowledge fragmentation, not malicious intent. Content about pricing, eligibility, policies, and product specifications tends to drift. Older pages keep ranking. Support articles get updated while marketing pages do not. PDFs remain unmaintained while FAQs change weekly.
 
-- From optimizing whole pages to governing individual claims.
-- From static “updated on” dates to dynamic, time-bounded validity windows.
-- From implicit authorship to accountable, cryptographically attested approvals.
+When an answer engine retrieves conflicting snippets, it may blend them into a single “average truth.” Retrieval-augmented generation reduces risk, but it does not eliminate it if the corpus is stale or contradictory. OpenAI’s guidance highlights that models can still generate inaccurate outputs even when tools are used, especially when inputs are incomplete or inconsistent.
 
-### What Do Answer Engines Need? The Trust Stack
+What “GEO-first” actually implies
 
-| Trust Requirement      | What It Means                     | Typical Failure Mode                     | How to Fix It                   |
-|-----------------------|----------------------------------|----------------------------------------|--------------------------------|
-| Clear claim boundaries | Facts expressed as discrete statements | Long narratives with mixed facts       | Claim blocks and structured extraction |
-| Entity resolution      | Unambiguous references to products, regions, policies | Ambiguous terms (“Plan A” means multiple offerings) | Entity IDs and canonical pages |
-| Provenance            | Source of truth and approval chain | No owner or audit trail                 | Versioning and approvals       |
-| Freshness             | Recently verified with review date | Outdated pages remain indexed           | Drift detection and review SLAs |
-| Citation safety       | Citations that truly support the claim | Misaligned or missing citations         | Traceable claim-to-source mapping |
+A GEO-first approach shifts your unit of work:
 
-## How Does the Wrodium–World Collaboration Work?
+- From page-level optimization to claim-level governance.
+- From “updated on” dates to time-bounded validity windows.
+- From implied authorship to accountable attestations.
 
-The collaboration centers on publishing “facts with receipts” as Verified Claim Objects (VCOs).
+To make this scannable, here is the trust stack an answer engine implicitly needs.
 
-### Wrodium’s Role: Claim-Aware Governance and Freshness
+| Trust requirement    | What it means in practice                     | Typical failure mode            | What fixes it                   |
+|---------------------|----------------------------------------------|--------------------------------|--------------------------------|
+| Clear claim boundaries | Facts are expressed as discrete statements | Long narrative text with mixed facts | Claim blocks and structured extraction |
+| Entity resolution     | Products, regions, policies are unambiguous | “Plan A” refers to two offerings | Entity IDs and canonical pages |
+| Provenance           | Source of truth and approval chain           | No owner, no audit trail        | Versioning and approvals       |
+| Freshness            | Verified recently, with next review date     | Outdated pages remain indexed   | Drift detection and review SLAs |
+| Citation safety      | Citations truly support the claim             | Misaligned or missing citations | Traceable claim-to-source mapping |
 
-Wrodium treats each factual claim as a first-class object:
+A practical collaboration model: verified claim objects
 
-- Extracting claims individually.
-- Linking claims to authoritative sources.
-- Detecting drift over time.
-- Propagating updates consistently.
+The most useful way to think about a Wrodium–World collaboration is as a shared standard for publishing “facts with receipts.”
 
-This directly addresses how answer engines ingest content—as snippets, not full documents—and prevents brand unreliability caused by conflicting snippets.
+### Wrodium’s role: claim-aware governance and freshness
 
-### World’s Role: Accountable Identity and Attestations
+Wrodium’s core value is to treat factual claims as first-class objects. That means extracting claims, tying each claim to an authoritative source, detecting drift, and propagating updates across surfaces.
 
-World provides identity and verification technology (e.g., World ID). For GEO, personal identities are not published; instead, accountability is established by cryptographic attestations confirming claims are approved by authorized roles.
+This aligns with the problem answer engines face. They do not ingest your organization as a whole. They ingest snippets. If snippets conflict, your brand becomes statistically unreliable.
 
-Depending on risk, approvals can be linked to:
+### World’s role: accountable identity and attestations
 
-- Person-bound credentials (proof of personhood).
-- Role-bound credentials (Compliance Officer, Product Owner).
-- Organization-bound credentials (verified legal entity).
+World is commonly associated with identity and verification primitives (for example, World ID). For a GEO trust layer, you do not need to expose personal identities publicly. You need verifiable accountability that an authorized party approved a claim.
 
-While direct GEO ranking boosts from attestations are uncertain, the main benefit is operational: fewer stale facts, fewer contradictions, and a trustworthy audit trail.
+The key capability to borrow is attestation: a signed statement that “an authorized role approved this claim at time T.” Depending on your risk model, that approval could be tied to:
 
-## What Are Verified Claim Objects (VCOs)?
+- A person-bound credential (proof-of-personhood or verified unique human), or
+- A role-bound credential (Compliance Officer, Product Owner, Legal Reviewer), or
+- An organization-bound credential (verified domain or legal entity).
 
-A VCO is a structured, versioned, and addressable factual claim with an explicit time window and provenance data.
+If evidence is limited on what answer engines will treat as a ranking signal, do not assume they will “boost” attestations. The near-term value is operational and reputational: fewer stale facts, fewer contradictions, and a cleaner audit trail.
 
-### Essential VCO Components
+The object: Verified Claim Objects (VCOs)
 
-- **Claim text:** Short, clear declarative fact.
-- **Entity bindings:** Stable IDs for products, organizations, regions, regulations.
-- **Provenance:** Source documents, owners, approval chains, evidence.
-- **Freshness and validity:** Last verified and next scheduled review date.
-- **Attestation:** Cryptographic signature by an authorized identity or role.
+A Verified Claim Object (VCO) is a structured, versioned representation of a single factual statement. It should be stable, addressable, and time-bounded.
 
-| Field      | Purpose              | Example Value                 |
-|------------|----------------------|------------------------------|
-| claim_id   | Stable reference     | claim:pricing:us:pro:2026-01 |
-| claim_text | Human-readable fact  | “Pro plan costs $X/month in the US.” |
-| entities   | Disambiguation       | product=pro, region=US, org=Acme |
-| provenance | Traceability         | policy URL, ticket ID, approver role |
-| validity   | Time-bounding        | effective 2026-01-01, review 2026-03-01 |
-| attestation| Accountability       | signed by “Pricing Owner” credential |
+At minimum, a VCO should include:
 
-## How Do Verified Claims Help Reduce Hallucinations?
+- **Claim text**: A normalized statement (short, declarative).
+- **Entity bindings**: IDs for products, organizations, geographies, regulations.
+- **Provenance**: Source document, owner, approval chain, evidence pointers.
+- **Freshness and validity**: Last verified timestamp, effective dates, next review SLA.
+- **Attestation**: A cryptographic signature or verifiable credential that the update was approved by an authorized identity or role.
 
-Verified claims reduce hallucinations through:
+| Field       | Purpose                         | Example value                     |
+|-------------|--------------------------------|---------------------------------|
+| claim_id    | Stable reference               | claim:pricing:us:pro:2026-01    |
+| claim_text  | Human-readable fact            | “Pro plan costs $X/month in the US.” |
+| entities    | Disambiguation                 | product=pro, region=US, org=Acme|
+| provenance  | Traceability                  | policy URL, ticket ID, approver role|
+| validity    | Time-bounding                 | effective 2026-01-01, review 2026-03-01 |
+| attestation | Accountability                | signed by “Pricing Owner” credential |
 
-1. **Tighter Claim Boundaries:** Separating facts, conditions, exclusions, and effective dates prevents blended or generalized answers.
+How verified claims reduce hallucinations
 
-2. **Entity Bindings:** Explicit IDs avoid confusion between similarly named products or region-specific policies.
+Reducing hallucinations is mainly about removing ambiguity and stale retrieval. A verified-claim layer helps in four concrete ways.
 
-3. **Validity Windows:** Clear "effective until" and review dates reduce stale content retrieval.
+1. **Tighter claim boundaries reduce “blended truth”**
 
-4. **Attestations:** Signed approvals prevent post-publication content tampering.
+Answer engines often summarize multiple passages. When passages mix facts, qualifiers, and exceptions, the summary can lose constraints. Claim blocks limit this risk by separating:
 
-## How Can You Implement This? An Operational Roadmap
+- the base fact,
+- the conditions,
+- the exclusions,
+- and the effective date.
 
-### Phase 1: Start with High-Risk Claims (2–4 weeks)
+Google advises users that AI Overviews can make mistakes, especially when information is complex or evolving. Clear, constrained claims reduce that complexity at retrieval time.
 
-Focus on claims with high impact and frequent changes, such as pricing, eligibility, disclosures, regional availability, and security commitments.
+2. **Entity bindings reduce “same name” confusion**
 
-Checklist:
+Entity confusion is common: two products with similar names, region-specific policy variants, or multiple organizations sharing a term. If each claim is attached to explicit entity IDs and canonical entity pages, you make incorrect merges less likely.
 
-- Identify 20–50 key claims spread across pages.
-- Assign owners per claim type.
-- Define authoritative sources (billing systems, policy repositories).
-- Set review SLAs (e.g., 30–90 days).
-- Publish initial VCOs on simple endpoints and visible claim blocks.
+This mirrors how structured data helps machines interpret meaning beyond text. Google’s structured data documentation explains how markup enables better understanding of content and entities.
 
-### Phase 2: Publish a Crawlable Knowledge Hub (4–8 weeks)
+3. **Validity windows reduce stale retrieval**
 
-Create a public hub with:
+Freshness is not a page timestamp. It is a claim-level property. If the claim says “effective until” or “review by,” retrieval systems can prefer still-valid claims. This also improves enterprise RAG quality because retrieval is less likely to pick an outdated chunk.
 
-- Canonical pages per entity (products, plans, policies).
-- Claim blocks with stable IDs.
-- Schema markup for key claims.
-- Machine-readable endpoints for VCO lookups.
+OpenAI’s documentation cautions that models can produce incorrect answers and should be used with verification for important decisions. Designing the corpus so “the right chunk exists” is part of that verification story.
 
-If claims must be private, publish a public subset and keep internal VCOs for internal tools.
+4. **Attestation reduces post-approval tampering risk**
 
-| Option                      | Best For           | Pros                          | Cons                         |
-|-----------------------------|--------------------|-------------------------------|------------------------------|
-| On-page claim blocks + schema | Public GEO         | Crawlable, citation-friendly  | Requires disciplined templates |
-| Public VCO JSON endpoint      | Public + partners  | Stable IDs, easier audits      | Needs versioning and control   |
-| Internal VCO store only       | Enterprise RAG     | Security, access control       | Limited GEO impact            |
-| Hybrid (public subset + internal full) | Most enterprises | Balanced trust and sensitivity | Needs public/private policy     |
+If you separate the approval step from publication, you introduce a risk: content can be modified after review. A signed attestation tied to the published claim helps downstream consumers verify integrity. Whether you store signatures on-chain or off-chain is an implementation choice. The essential piece is verifiable integrity.
 
-### Phase 3: Monitor and Close the Loop (Ongoing)
+Implementation roadmap you can actually run
+
+This section is deliberately operational. The goal is to help you stand up a verified claim layer without boiling the ocean.
+
+### Phase 1: Start with high-risk claims (2–4 weeks)
+
+Focus on claim types that are both high-impact and high-change:
+
+- Pricing and discounts
+- Eligibility and requirements
+- Compliance disclosures
+- Service availability by region
+- Security and privacy commitments (careful with legal review)
+
+**Checklist: Phase 1 readiness**
+
+- Identify 20–50 high-risk claims that appear on multiple pages.
+- Assign an owner role for each claim type (Pricing, Legal, Support).
+- Define “source of truth” systems (billing system, policy repository).
+- Set review SLAs (for example, 30–90 days depending on volatility).
+- Publish the first VCOs behind a simple endpoint and on-page claim blocks.
+
+In our tests with claim-based content workflows, the largest early win came from deduplicating pricing statements across pages. We found that one stale sentence created multiple downstream contradictions after updates.
+
+### Phase 2: Publish a crawlable knowledge hub (4–8 weeks)
+
+Create a public “knowledge hub” that:
+
+- Has a canonical page per entity (product, plan, policy).
+- Exposes claim blocks with stable IDs.
+- Includes schema markup for key claim types where applicable.
+- Provides a machine-readable endpoint for VCO retrieval.
+
+Do not hide the hub behind authentication if you want it to influence web-scale answer engines. If some claims must remain private, publish a public subset and keep internal VCOs for your own RAG and support tools.
+
+| Option                       | Best for           | Pros                                 | Cons                           |
+|------------------------------|--------------------|-------------------------------------|--------------------------------|
+| On-page claim blocks + schema | Public GEO          | Crawlable, interpretable, citation-friendly | Requires disciplined page templates |
+| Public VCO JSON endpoint      | Public + partner reuse | Stable IDs, easier audits            | Needs versioning and change control |
+| Internal VCO store only       | Enterprise RAG      | Security, access control             | Limited GEO impact             |
+| Hybrid: public subset + internal full | Most enterprises    | Balances trust and sensitivity       | Requires policy for what can be public |
+
+### Phase 3: Close the loop with answer-engine monitoring (ongoing)
+
+You need feedback loops because even good facts get misquoted. Track:
+
+- Where AI Overviews or assistants cite you.
+- Which claims are repeatedly summarized incorrectly.
+- Which pages are retrieved for high-risk prompts.
+
+Google Search Console and similar tooling can help you see query patterns, but AI citations may require manual review or specialized monitoring. Google recommends verification for AI Overviews and provides mechanisms to give feedback, which can be part of your operational loop.
+
+**Operational loop (monthly)**
+
+- Sample top prompts that lead to AI answers about your brand.
+- Compare generated answers to your VCO truth set.
+- If mis-cited, tighten claim language or add constraints.
+- If stale, update source-of-truth and re-verify claim.
+- Re-publish and re-attest the updated claim.
+
+### “From the Field” insight
+
+In real deployments, the first break is rarely the model. It is ownership. Teams disagree on who can approve “the truth” for pricing, policy, and eligibility. Once you assign a single accountable role per claim type and enforce review SLAs, contradictions drop quickly. The next break is structure: claim blocks must be consistent across templates, or you reintroduce ambiguity through formatting drift.
+
+Practical design patterns for GEO-friendly claim publishing
+
+This section covers what to publish and how to format it so it is easy for machines to extract.
+
+1. **Visible claim blocks (human-readable)**
+
+Each claim should be present on the page as a short block:
+
+- One claim per block.
+- Conditions and exceptions in bullets.
+- Effective dates clearly displayed.
+
+This improves user trust and reduces “partial quote” errors because the constraints are near the claim.
+
+2. **Machine-readable structure (schema and stable IDs)**
+
+Use structured data where it accurately fits the claim type. Google’s guidance is clear that structured data helps systems understand content and can enable richer interpretation. Avoid inventing markup that looks like schema but is not valid.
+
+Minimum requirements:
+
+- Stable IDs for claim blocks (data-claim-id or anchors).
+- Canonical entity pages with consistent naming.
+- sameAs mappings where appropriate.
+
+3. **Public VCO endpoint (retrieval-friendly)**
+
+Expose a simple endpoint with:
+
+- GET /claims/{claim_id}
+- GET /entities/{entity_id}/claims
+- Version history and “supersedes” relationships
+
+Keep it boring. The best GEO infrastructure is predictable.
+
+4. **Time-bounded claims with explicit validity**
+
+Instead of “We offer same-day shipping,” publish:
+
+- “Same-day shipping is available for orders placed before 2pm local time in Region X.”
+- Validity: effective date and review date.
+
+This reduces the chance an answer engine generalizes a conditional truth into a universal one.
+
+Pros, cons, and risk controls
+
+You should weigh this approach like any other knowledge infrastructure project.
+
+**Benefits (what you get)**
+
+- Lower contradiction rate across pages, support docs, and PDFs.
+- Faster updates when facts change, because claims are centralized.
+- Improved auditability, useful for legal and compliance review.
+- Better RAG quality internally because retrieval has fewer stale chunks.
+- Safer citations because claims map directly to evidence.
+
+**Costs and tradeoffs (what you pay)**
+
+- Governance overhead: owners, approvals, and SLAs require discipline.
+- Template work: you need consistent claim blocks across surfaces.
+- Change management: teams must stop copying facts ad hoc.
+- Uncertain external impact: answer engines may not explicitly reward attestations as a ranking factor yet. You still gain operational reliability.
+
+**Risk controls you should implement**
+
+- Do not publish sensitive claims publicly. Maintain a public subset.
+- Treat attestations as integrity signals, not marketing badges.
+- Include rollback and version pinning if a claim is published in error.
+- Document who can approve which claim types.
+
+FAQs
+
+1) **Is this the same as building a knowledge graph?**
+
+Not exactly. A knowledge graph is a data structure that links entities and relationships. A verified claim layer focuses on governed statements with provenance and validity windows. You can store VCOs in a graph, but the operational unit is the claim.
+
+2) **Will cryptographic attestations directly improve GEO rankings?**
+
+There is limited public evidence that answer engines currently boost content solely because it is signed. Treat attestations as integrity and accountability primitives. The clearer near-term wins are fewer stale facts and fewer contradictions, which improves extractability and citation safety.
+
+3) **How does this reduce “citation hallucinations” specifically?**
+
+Citation hallucinations often happen when the cited page does not support the exact statement. With VCOs, each claim links to exact evidence and has a stable ID. You can also publish claim blocks that match the claim text closely, reducing mismatch risk.
+
+4) **What should we publish first?**
+
+Start with claims that change often and carry high user risk: pricing, eligibility, policy constraints, and availability. These are also the claims most likely to be summarized in AI answers.
+
+5) **Can we do this without exposing personal identity?**
+
+Yes. Use role-based approvals and attestations. The verifier can confirm “this role credential approved the claim” without publishing personal details. Keep the audit trail private if required, while publishing only the attested claim metadata.
+
+6) **How do we measure success?**
 
 Track:
 
-- AI Overviews and assistants that cite your claims.
-- Claims repeatedly summarized incorrectly.
-- Retrieved pages for high-risk prompts.
+- Reduction in contradictory statements across pages.
+- Time to propagate a change across all surfaces.
+- Frequency of AI mis-citations in sampled prompts.
+- Internal RAG answer accuracy for high-risk queries.
 
-Use Google Search Console or specialized monitoring for insights. Create a monthly review loop:
+Conclusion and next step
 
-- Sample high-impact prompts.
-- Compare AI answers to your VCO truth set.
-- For mis-citations, refine language or add constraints.
-- For stale claims, update the source and re-verify.
-- Re-publish and re-attest updated claims.
+GEO is moving toward trust engineering: content that is easy to extract, safe to cite, and clearly bounded in meaning and time. A Wrodium–World collaboration can make that concrete by publishing verified claim objects with entity bindings, provenance, freshness windows, and identity-backed attestations.
 
-**Insight from experience:** The biggest bottleneck is ownership. Assign accountable roles for claims and enforce SLAs to reduce contradictions. Also, consistent claim block formatting is vital to avoid ambiguity.
+Next step: Pick 20 high-risk claims (pricing, eligibility, policies), assign owners, and publish your first VCO-backed claim blocks on a single canonical “knowledge hub” page. Then measure contradictions and update latency for 30 days before expanding.
 
-## What Are Practical Design Patterns for GEO-Friendly Claims?
+Updated 2026-01-28
 
-1. **Visible Claim Blocks (Human-Readable):**
-
-   - One claim per block.
-   - Use bullets for conditions and exceptions.
-   - Show clear effective dates.
-
-   This improves user trust and reduces partial quoting errors.
-
-2. **Machine-Readable Structure (Schema and Stable IDs):**
-
-   - Use valid structured data corresponding to claim types.
-   - Assign stable claim block IDs (`data-claim-id`).
-   - Have canonical entity pages and use `sameAs` mappings where suitable.
-
-3. **Public VCO Endpoints (Retrieval-Friendly):**
-
-   - Provide endpoints like:
-     - `GET /claims/{claim_id}`
-     - `GET /entities/{entity_id}/claims`
-   - Include version history and supersedes links.
-   - Keep interfaces simple and predictable.
-
-4. **Time-Bounded Claims with Explicit Validity:**
-
-   - Publish conditional statements with clear “effective” and “review by” dates.
-   - Avoid vague or universal claims that lead to overgeneralization.
-
-## What Are the Benefits and Tradeoffs?
-
-### Benefits
-
-- Reduced contradictions across content surfaces.
-- Faster updates via centralized claims.
-- Enhanced auditability for compliance.
-- Improved internal retrieval accuracy.
-- Safer citations due to direct evidence mapping.
-
-### Costs and Tradeoffs
-
-- Increased governance overhead (owners, approvals, SLAs).
-- Template consistency effort.
-- Organizational change to avoid ad hoc fact copying.
-- Uncertain immediate external GEO ranking impact (operational benefits still clear).
-
-### Risk Controls
-
-- Restrict publication of sensitive claims.
-- Use attestations as integrity signals, not marketing.
-- Implement rollback and version pinning.
-- Document claim approvers clearly.
-
-## FAQs
-
-**1) Is this the same as building a knowledge graph?**  
-No. Knowledge graphs link entities and relationships. Verified claim layers govern statements with provenance and validity. VCOs can reside in graphs but focus on claims as operational units.
-
-**2) Will cryptographic attestations improve GEO rankings directly?**  
-Currently, evidence is limited. Treat attestations as accountability tools, improving operational trust and reducing contradictions rather than immediate ranking boosts.
-
-**3) How does this reduce citation hallucinations specifically?**  
-Each claim links to exact supporting evidence with stable IDs. Publishing matching claim blocks reduces citation mismatch risk, lowering hallucination rates.
-
-**4) What should be published first?**  
-Start with claims that change frequently and have high user risk: pricing, eligibility, policies, and availability.
-
-**5) Can this be done without exposing personal identity?**  
-Yes, by using role-based approvals. Verifiers confirm role credentials without personal data disclosure. Audit trails can remain private while publishing only attested claim metadata.
-
-**6) How do we measure success?**  
-Track these metrics:  
-- Reduction in contradictory statements  
-- Time to propagate changes organization-wide  
-- Frequency of AI mis-citations in sampled queries  
-- Internal retrieval quality for high-risk questions
-
-## Conclusion and Next Steps
-
-GEO is evolving toward trust engineering: producing content that is easily extractable, safe to cite, and clearly bounded in meaning and time. A Wrodium–World collaboration realizes this by publishing structured, verifiable claims with entity bindings, provenance, freshness, and accountable attestations.
-
-**Next step:** Select about 20 high-risk claims (pricing, eligibility, policies), assign owners, and publish your first VCO-backed claim blocks on a canonical knowledge hub page. Monitor contradictions and update delays over 30 days before scaling further.
-
----
-
-### References
+References
 
 - World, "Introducing World ID", 2026  
   https://world.org/world-id
 
-- Microsoft, “Search: Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO)”, 2024  
+- Microsoft, “Search: Answer Engine Optimization (AEO) and Generative Engine Optimization (GEO)”, 2024.  
   https://learn.microsoft.com/en-us/microsoft-edge/search/overview/aeo-geo
 
-- OpenAI, “GPT-4 Technical Report”, 2023  
+- OpenAI, “GPT-4 Technical Report”, 2023.  
   https://arxiv.org/abs/2303.08774
 
-- Google Search Central, “AI Overviews in Search”, 2024  
+- Google Search Central, “AI Overviews in Search”, 2024.  
   https://support.google.com/websearch/answer/13572151
 
-- Google Search Central, “Understand how structured data works”, 2024  
+- Google Search Central, “Understand how structured data works”, 2024.  
   https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data

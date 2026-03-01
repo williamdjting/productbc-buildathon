@@ -9,58 +9,60 @@
   "aeo_checklist_evaluation": {
     "one_paragraph_answer_near_top": {
       "status": "partial",
-      "reason": "There is an introductory section near the top that outlines main ideas about Wrodium, World, GEO, and reducing hallucinations but it is multiple paragraphs and somewhat dense rather than a concise 40-80 word single paragraph answer.",
+      "reason": "The article starts with a few opening sentences that introduce the topic and generally answer the question, but the answer is spread over multiple small paragraphs and slightly exceeds the word count for a concise one-paragraph answer.",
       "evidence": [
-        "L1-12: 'Generative Engine Optimization (GEO) increasingly rewards information that is structured...' to 'Publishing these claims in crawlable, schema-rich formats...'"
+        "L2-7: 'Generative Engine Optimization (GEO) increasingly rewards information...'",
+        "L7-15: 'Wrodium and World can reduce AI hallucinations by turning enterprise facts into “verified claim objects”...'"
       ]
     },
     "question_style_headings_present": {
       "status": "yes",
-      "reason": "Multiple question-style headings appear throughout the article, indicating main topics and themes in question format.",
+      "reason": "There are multiple question-style headings clearly present such as 'Why hallucinations happen in enterprise knowledge' and 'What should we publish first?'.",
       "evidence": [
-        "L36: 'Why hallucinations happen in enterprise knowledge'",
-        "L45: 'What “GEO-first” actually implies'",
-        "L222: 'FAQs'",
-        "L224: '1) Is this the same as building a knowledge graph?'",
-        "L229: '2) Will cryptographic attestations directly improve GEO rankings?'",
-        "L242: '3) How does this reduce “citation hallucinations” specifically?'",
-        "L262: '4) What should we publish first?'"
+        "L35: 'Why hallucinations happen in enterprise knowledge'",
+        "L112: 'What “GEO-first” actually implies'",
+        "L252: 'FAQs'",
+        "L268: '1) Is this the same as building a knowledge graph?'",
+        "L280: '4) What should we publish first?'"
       ]
     },
     "faq_or_howto_schema_present": {
-      "status": "partial",
-      "reason": "There is a clearly marked FAQ section with numbered questions and answers. However, no explicit FAQ or HowTo schema markup is present in markdown.",
+      "status": "yes",
+      "reason": "A clearly marked FAQ section is present, containing multiple clearly formatted Q&A items.",
       "evidence": [
-        "L220-290: 'FAQs' section with multiple questions and answers"
+        "L252-314: 'FAQs' section with numbered questions and answers"
       ]
     },
     "definitions_consistent": {
       "status": "yes",
-      "reason": "Key concepts such as Answer engine, Hallucination, Provenance, Freshness are clearly defined early on and used consistently throughout the article.",
+      "reason": "Key concepts such as 'Answer engine', 'Hallucination', 'Provenance', and 'Freshness' are defined explicitly early and those definitions are consistently reflected in later content.",
       "evidence": [
-        "L27-35: 'Definitions' section",
-        "Use of 'hallucination', 'provenance', 'freshness' is consistent across later sections"
+        "L29-41: 'Definitions' section defining key concepts",
+        "Consistent use of terms 'hallucinations', 'provenance', 'freshness' throughout"
       ]
     },
     "page_fast_readable_accessible": {
       "fast_page": {
         "status": "not_evaluated",
-        "reason": "Page loading speed or performance cannot be inferred from markdown content."
+        "reason": "Page speed cannot be evaluated from markdown content alone."
       },
       "readable": {
-        "status": "partial",
-        "reason": "The article uses section headings, bullet points, and tables to aid readability but contains lengthy dense paragraphs that may hinder quick comprehension.",
+        "status": "yes",
+        "reason": "The article is well-structured with clear paragraphs, bullet points, tables, and headings aiding readability.",
         "evidence": [
-          "Use of lists in 'Core concepts' and 'Implementation roadmap'",
-          "Some long dense paragraphs in introduction and explanation sections"
+          "Multiple headings for sections",
+          "Use of numbered and bullet lists (e.g. L78-84, L195-250)",
+          "Tables (L95-105, L190-210)",
+          "Short paragraphs and clear language"
         ]
       },
       "accessible": {
         "status": "partial",
-        "reason": "The article structure with headings, lists, and tables suggests awareness of content accessibility, but no explicit accessibility markup or landmarks can be assessed from markdown alone.",
+        "reason": "Some accessibility best practices such as clear headings and bullet points are met; however, the markdown is fairly complex with tables and dense technical language which may limit accessibility for some readers. No explicit accessibility markup is visible.",
         "evidence": [
-          "Multiple headings with ##",
-          "Bullet lists and tables for data presentation"
+          "Use of headings and lists supports structure",
+          "Dense jargon and technical terms without lay explanations (throughout)",
+          "Tables used for data presentation (L95-105, L190-210)"
         ]
       }
     }
