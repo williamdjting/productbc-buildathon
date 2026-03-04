@@ -1,40 +1,57 @@
 # buildathon-project
 
 ## Project Overview
-AEO (Answer Engine Optimization) CLI toolkit. Two Node.js ESM scripts that use OpenAI's API to classify and improve articles for answer engine discoverability.
+AEO (Answer Engine Optimization) toolkit. Node.js ESM CLI scripts + a Next.js web UI that use OpenAI's API to classify and improve articles for answer engine discoverability.
 
-## Setup
-```bash
-export OPENAI_API_KEY="your-key-here"
+## Repo Structure
+```
+buildathon-project/
+  classify-aeo.mjs     — CLI: score article → JSON report
+  improve-aeo.mjs      — CLI: rewrite article to fix failing AEO criteria
+  compare-aeo.mjs      — CLI: diff two AEO JSON reports (-o flag for file output)
+  web/                 — Next.js 14 App Router web UI
+    .env.local         — OPENAI_API_KEY, FIRECRAWL_API_KEY (never commit)
+    src/
+      app/
+        page.tsx       — main UI (classify → improve → reclassify → compare)
+        api/classify/  — POST: runs classify-aeo.mjs, returns { report, score }
+        api/improve/   — POST: runs improve-aeo.mjs, returns { revisedText }
+        api/compare/   — POST: runs compare-aeo.mjs -o, reads file, returns { text }
+        api/scrape/    — POST: Firecrawl scrape URL → markdown
+      components/      — FileUploader, UrlScraper, AeoReport, ScoreGauge, RevisedArticle, CompareView
+      lib/
+        spawn-script.ts  — child_process.spawn wrapper → Promise<string>
+        temp-files.ts    — mkdtemp + cleanup
+        firecrawl.ts     — server-only Firecrawl singleton
+        types.ts         — AeoReport TypeScript interfaces
+        auth/index.ts    — placeholder (swap in Clerk/NextAuth)
+        db/index.ts      — placeholder (swap in Prisma)
 ```
 
-## Scripts
-- `classify-aeo.mjs` — Score an article against the AEO checklist → JSON report
-- `improve-aeo.mjs` — Rewrite an article to address failing AEO criteria
-- `compare-aeo.mjs` — Compare two AEO JSON reports to see changes
-
-## Usage
+## Running the Web UI Locally
 ```bash
-# Set LLM key
+cd web
+npm install
+# Fill in web/.env.local:
+#   OPENAI_API_KEY=sk-...
+#   FIRECRAWL_API_KEY=fc-...
+npm run dev   # http://localhost:3000
+```
+
+## CLI Usage
+```bash
 export OPENAI_API_KEY="API_KEY"
 
-# Classify — takes wrodium.txt and classifies it into a score
 node classify-aeo.mjs wrodium.txt > wrodium.json
-
-# Improve — take the original wrodium.json and improve it
 node improve-aeo.mjs wrodium.json wrodium.txt -o wrodium-revised.txt
-
-# Reclassify — classifies the revised article and saves JSON output
 node classify-aeo.mjs wrodium-revised.txt > wrodium-revised-aeo.json
-
-# Compare — compare the two JSONs to see the changes
 node compare-aeo.mjs wrodium.json wrodium-revised-aeo.json
 ```
 
 ## Tech Stack
-- Node.js ESM (`.mjs`), no external dependencies
-- Native `fetch` and `fs/promises`
-- OpenAI API (`gpt-4.1-mini`)
+- **CLI** — Node.js ESM, no external dependencies, native `fetch` and `fs/promises`
+- **Web** — Next.js 14 App Router, TypeScript, Tailwind CSS, `@mendable/firecrawl-js`
+- **LLM** — OpenAI API (`gpt-4.1-mini`)
 
 ## AEO Checklist Criteria
 1. One-paragraph answer near top (40–80 words)
@@ -42,3 +59,21 @@ node compare-aeo.mjs wrodium.json wrodium-revised-aeo.json
 3. FAQ or HowTo schema/section
 4. Consistent key concept definitions
 5. Fast, readable, accessible structure
+
+## Script Integration (web → CLI)
+API routes write uploaded content to `mkdtemp` temp files, spawn the `.mjs` script with those paths, capture stdout (or read `-o` output file for compare), clean up, and return JSON. Zero changes required to the CLI scripts when modifying the web UI.
+
+## Adding Auth (additive, no rewrites)
+```bash
+npm install @clerk/nextjs
+# Wrap web/src/app/layout.tsx with <ClerkProvider>
+# Add web/src/middleware.ts with clerkMiddleware
+# Replace web/src/lib/auth/index.ts stub
+```
+
+## Adding a Database (additive, no rewrites)
+```bash
+npm install prisma @prisma/client
+# Replace web/src/lib/db/index.ts stub with PrismaClient
+# Schema: AnalysisSession { id, userId, originalText, aeoReport, revisedText }
+```
