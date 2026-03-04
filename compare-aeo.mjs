@@ -68,12 +68,19 @@ function formatChange(oldStatus, newStatus) {
 
 async function main() {
   const args = process.argv.slice(2);
-  const [oldPath, newPath] = args;
-  
+  const outIdx = args.indexOf("-o");
+  const hasOut = outIdx !== -1;
+  const outPath = hasOut ? args[outIdx + 1] : null;
+  const rest = hasOut ? args.slice(0, outIdx).concat(args.slice(outIdx + 2)) : args;
+  const [oldPath, newPath] = rest;
+
   if (!oldPath || !newPath) {
-    console.error("Usage: node compare-aeo.mjs <old-aeo-report.json> <new-aeo-report.json>");
+    console.error("Usage: node compare-aeo.mjs <old-aeo-report.json> <new-aeo-report.json> [-o <output-path>]");
     process.exit(1);
   }
+
+  const lines = [];
+  const out = (...msgs) => lines.push(msgs.join(""));
   
   let oldReport, newReport;
   try {
@@ -136,77 +143,77 @@ async function main() {
   }
   
   // Print comparison report
-  console.log("=".repeat(80));
-  console.log("AEO EVALUATION COMPARISON");
-  console.log("=".repeat(80));
-  console.log(`Original: ${oldPath}`);
-  console.log(`Revised:  ${newPath}`);
-  console.log();
-  
+  out("=".repeat(80));
+  out("AEO EVALUATION COMPARISON");
+  out("=".repeat(80));
+  out(`Original: ${oldPath}`);
+  out(`Revised:  ${newPath}`);
+  out();
+
   // Article metadata comparison
   const oldArticle = oldReport?.article || {};
   const newArticle = newReport?.article || {};
-  console.log("ARTICLE METADATA:");
-  console.log("-".repeat(80));
+  out("ARTICLE METADATA:");
+  out("-".repeat(80));
   for (const key of ["title", "date", "author", "tags"]) {
     const oldVal = oldArticle[key];
     const newVal = newArticle[key];
     if (oldVal !== newVal) {
-      console.log(`  ${key}:`);
-      console.log(`    Old: ${JSON.stringify(oldVal)}`);
-      console.log(`    New: ${JSON.stringify(newVal)}`);
+      out(`  ${key}:`);
+      out(`    Old: ${JSON.stringify(oldVal)}`);
+      out(`    New: ${JSON.stringify(newVal)}`);
     }
   }
-  console.log();
-  
+  out();
+
   // Summary statistics
-  console.log("SUMMARY:");
-  console.log("-".repeat(80));
-  console.log(`  Improvements:  ${improvements.length}`);
-  console.log(`  Regressions:   ${regressions.length}`);
-  console.log(`  Unchanged:     ${unchanged.length}`);
-  if (added.length > 0) console.log(`  Added:         ${added.length}`);
-  if (removed.length > 0) console.log(`  Removed:       ${removed.length}`);
-  console.log();
-  
+  out("SUMMARY:");
+  out("-".repeat(80));
+  out(`  Improvements:  ${improvements.length}`);
+  out(`  Regressions:   ${regressions.length}`);
+  out(`  Unchanged:     ${unchanged.length}`);
+  if (added.length > 0) out(`  Added:         ${added.length}`);
+  if (removed.length > 0) out(`  Removed:       ${removed.length}`);
+  out();
+
   // Detailed improvements
   if (improvements.length > 0) {
-    console.log("📈 IMPROVEMENTS:");
-    console.log("-".repeat(80));
+    out("📈 IMPROVEMENTS:");
+    out("-".repeat(80));
     for (const { key, oldItem, newItem } of improvements) {
-      console.log(`  ${key}`);
-      console.log(`    ${formatChange(oldItem.status, newItem.status)} ${formatStatus(oldItem.status)} → ${formatStatus(newItem.status)}`);
+      out(`  ${key}`);
+      out(`    ${formatChange(oldItem.status, newItem.status)} ${formatStatus(oldItem.status)} → ${formatStatus(newItem.status)}`);
       if (newItem.reason && newItem.reason !== oldItem.reason) {
-        console.log(`    New reason: ${newItem.reason}`);
+        out(`    New reason: ${newItem.reason}`);
       }
-      console.log();
+      out();
     }
   }
-  
+
   // Regressions
   if (regressions.length > 0) {
-    console.log("📉 REGRESSIONS:");
-    console.log("-".repeat(80));
+    out("📉 REGRESSIONS:");
+    out("-".repeat(80));
     for (const { key, oldItem, newItem } of regressions) {
-      console.log(`  ${key}`);
-      console.log(`    ${formatChange(oldItem.status, newItem.status)} ${formatStatus(oldItem.status)} → ${formatStatus(newItem.status)}`);
+      out(`  ${key}`);
+      out(`    ${formatChange(oldItem.status, newItem.status)} ${formatStatus(oldItem.status)} → ${formatStatus(newItem.status)}`);
       if (newItem.reason && newItem.reason !== oldItem.reason) {
-        console.log(`    New reason: ${newItem.reason}`);
+        out(`    New reason: ${newItem.reason}`);
       }
-      console.log();
+      out();
     }
   }
-  
+
   // Unchanged (optional - can be verbose)
   if (unchanged.length > 0 && unchanged.length < 20) {
-    console.log("→ UNCHANGED:");
-    console.log("-".repeat(80));
+    out("→ UNCHANGED:");
+    out("-".repeat(80));
     for (const { key, oldItem, newItem } of unchanged) {
-      console.log(`  ${key}: ${formatStatus(oldItem.status)}`);
+      out(`  ${key}: ${formatStatus(oldItem.status)}`);
     }
-    console.log();
+    out();
   }
-  
+
   // Overall score calculation
   const calculateScore = (items) => {
     let total = 0;
@@ -220,29 +227,37 @@ async function main() {
     }
     return count > 0 ? (total / count).toFixed(2) : "0.00";
   };
-  
+
   const oldScore = calculateScore(oldFlat);
   const newScore = calculateScore(newFlat);
   const scoreChange = (parseFloat(newScore) - parseFloat(oldScore)).toFixed(2);
-  
-  console.log("OVERALL SCORE:");
-  console.log("-".repeat(80));
-  console.log(`  Original: ${oldScore} / 3.00`);
-  console.log(`  Revised:  ${newScore} / 3.00`);
-  console.log(`  Change:   ${scoreChange >= 0 ? "+" : ""}${scoreChange}`);
-  console.log();
-  
+
+  out("OVERALL SCORE:");
+  out("-".repeat(80));
+  out(`  Original: ${oldScore} / 3.00`);
+  out(`  Revised:  ${newScore} / 3.00`);
+  out(`  Change:   ${scoreChange >= 0 ? "+" : ""}${scoreChange}`);
+  out();
+
   // Final verdict
   if (improvements.length > 0 && regressions.length === 0) {
-    console.log("✅ Overall: The revision shows improvements with no regressions!");
+    out("✅ Overall: The revision shows improvements with no regressions!");
   } else if (improvements.length > regressions.length) {
-    console.log("✅ Overall: The revision shows net improvements.");
+    out("✅ Overall: The revision shows net improvements.");
   } else if (regressions.length > improvements.length) {
-    console.log("⚠️  Overall: The revision shows net regressions.");
+    out("⚠️  Overall: The revision shows net regressions.");
   } else if (improvements.length === 0 && regressions.length === 0) {
-    console.log("→ Overall: No changes in evaluation status.");
+    out("→ Overall: No changes in evaluation status.");
   } else {
-    console.log("↔️  Overall: Mixed results with both improvements and regressions.");
+    out("↔️  Overall: Mixed results with both improvements and regressions.");
+  }
+
+  const output = lines.join("\n");
+  if (outPath) {
+    await fs.writeFile(outPath, output, "utf8");
+    console.error(`Wrote comparison to ${outPath}`);
+  } else {
+    console.log(output);
   }
 }
 
