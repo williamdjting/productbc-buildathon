@@ -11,17 +11,24 @@ export OPENAI_API_KEY="your-key-here"
 ## Scripts
 - `classify-aeo.mjs` — Score an article against the AEO checklist → JSON report
 - `improve-aeo.mjs` — Rewrite an article to address failing AEO criteria
+- `compare-aeo.mjs` — Compare two AEO JSON reports to see changes
 
 ## Usage
 ```bash
-# Classify an article
-node classify-aeo.mjs <article.md> > report.json
+# Set LLM key
+export OPENAI_API_KEY="API_KEY"
 
-# Improve based on report
-node improve-aeo.mjs <report.json> <article.txt> -o revised.txt
+# Classify — takes wrodium.txt and classifies it into a score
+node classify-aeo.mjs wrodium.txt > wrodium.json
 
-# Re-score the revised article
-node classify-aeo.mjs revised.txt > revised-report.json
+# Improve — take the original wrodium.json and improve it
+node improve-aeo.mjs wrodium.json wrodium.txt -o wrodium-revised.txt
+
+# Reclassify — classifies the revised article and saves JSON output
+node classify-aeo.mjs wrodium-revised.txt > wrodium-revised-aeo.json
+
+# Compare — compare the two JSONs to see the changes
+node compare-aeo.mjs wrodium.json wrodium-revised-aeo.json
 ```
 
 ## Tech Stack
