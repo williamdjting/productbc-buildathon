@@ -59,6 +59,17 @@ node compare-aeo.mjs wrodium.json wrodium-revised-aeo.json
 4. Consistent key concept definitions
 5. Fast, readable, accessible structure
 
+## Planned Integrations
+The architecture is designed to support these additions without structural rewrites:
+
+| Feature | How |
+|---|---|
+| **Auth** | Clerk or NextAuth — wrap `layout.tsx`, add `middleware.ts` |
+| **Database** | Prisma — one client file, one `prisma.create()` per route |
+| **Payments** | Stripe — Checkout Session + webhook route, gate API routes in middleware |
+
+See `CLAUDE.md` for implementation details on each.
+
 ## Tech Stack
 - **CLI** — Node.js ESM (`.mjs`), no external dependencies, native `fetch` and `fs/promises`
 - **Web** — Next.js 14 App Router, TypeScript, Tailwind CSS, Firecrawl JS SDK

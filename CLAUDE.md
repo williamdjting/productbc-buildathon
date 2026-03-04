@@ -77,3 +77,25 @@ npm install prisma @prisma/client
 # Replace web/src/lib/db/index.ts stub with PrismaClient
 # Schema: AnalysisSession { id, userId, originalText, aeoReport, revisedText }
 ```
+
+## Adding Stripe Payments (additive, no rewrites)
+Next.js App Router is fully supported by Stripe's official SDK and webhook pattern.
+
+```bash
+npm install stripe @stripe/stripe-js
+```
+
+Add to `web/.env.local`:
+```
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+```
+
+Integration points (all additive):
+- `web/src/lib/stripe.ts` — server-only Stripe singleton (`new Stripe(process.env.STRIPE_SECRET_KEY)`)
+- `web/src/app/api/stripe/checkout/route.ts` — creates a Checkout Session, redirects user to Stripe-hosted page
+- `web/src/app/api/stripe/webhook/route.ts` — receives `checkout.session.completed` events, updates user subscription status in DB
+- `web/src/middleware.ts` — gate `/api/classify`, `/api/improve`, `/api/compare` behind an active subscription check (one middleware file, no route changes)
+
+Recommended flow: free tier allows N classifies/day → Stripe Checkout for a subscription → webhook flips `user.isPro` in DB → middleware unlocks full access.
