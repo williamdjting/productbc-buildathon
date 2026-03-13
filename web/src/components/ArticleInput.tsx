@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
+import BulkUrlScrape from "./BulkUrlScrape";
 
 interface ArticleInputProps {
   onContent: (text: string) => void;
   disabled?: boolean;
 }
 
-type Tab = "paste" | "file" | "url";
+type Tab = "paste" | "file" | "url" | "bulk";
 
 export default function ArticleInput({ onContent, disabled }: ArticleInputProps) {
   const [tab, setTab] = useState<Tab>("paste");
@@ -55,6 +56,7 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
     { id: "paste", label: "Paste text" },
     { id: "file", label: "Upload file" },
     { id: "url", label: "Scrape URL" },
+    { id: "bulk", label: "Bulk Scrape" },
   ];
 
   return (
@@ -153,8 +155,13 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
         </div>
       )}
 
+      {/* Bulk URL scraper */}
+      {tab === "bulk" && (
+        <BulkUrlScrape onContent={onContent} disabled={disabled} />
+      )}
+
       {/* Word count */}
-      {text && (
+      {text && tab !== "bulk" && (
         <p className="text-xs text-gray-400">
           {wordCount.toLocaleString()} words
         </p>
