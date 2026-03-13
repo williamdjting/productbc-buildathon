@@ -1,66 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
-import { spawnScript } from "@/lib/spawn-script";
-import { withTempDir, writeTempFile } from "@/lib/temp-files";
-import type { AeoReport, ClassifyResponse } from "@/lib/types";
-
-const STATUS_SCORE: Record<string, number> = {
-  yes: 3,
-  partial: 2,
-  no: 1,
-  not_evaluated: 0,
-};
-
-function flattenStatuses(obj: unknown): number[] {
-  if (!obj || typeof obj !== "object") return [];
-  const o = obj as Record<string, unknown>;
-  const results: number[] = [];
-  if ("status" in o && typeof o.status === "string") {
-    const val = STATUS_SCORE[o.status];
-    if (val !== undefined) results.push(val);
-  }
-  for (const [k, v] of Object.entries(o)) {
-    if (k === "status" || k === "reason" || k === "evidence") continue;
-    results.push(...flattenStatuses(v));
-  }
-  return results;
-}
-
-function calcScore(report: AeoReport): number {
-  const statuses = flattenStatuses(report.aeo_checklist_evaluation);
-  if (statuses.length === 0) return 0;
-  const sum = statuses.reduce((a, b) => a + b, 0);
-  return parseFloat((sum / statuses.length).toFixed(2));
-}
+import { getAnthropicClient } from "@/lib/anthropic";
+import { buildClassifyPrompt } from "@/lib/prompts";
+import { getAllCriteria } from "@/lib/checklists";
+import { calcScores } from "@/lib/score";
+import type {
+  ClassifyRequest,
+  ClassifyResponse,
+  AnalysisReport,
+  CriterionResult,
+} from "@/lib/types";
 
 export async function POST(req: NextRequest) {
-  let text: string;
-  const contentType = req.headers.get("content-type") ?? "";
+  const body: ClassifyRequest = await req.json().catch(() => null);
 
-  if (contentType.includes("multipart/form-data")) {
-    const form = await req.formData();
-    const file = form.get("file");
-    if (!file || typeof file === "string") {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
-    text = await (file as File).text();
-  } else {
-    const body = await req.json().catch(() => null);
-    if (!body?.text) {
-      return NextResponse.json({ error: "No text provided" }, { status: 400 });
-    }
-    text = body.text;
+  if (!body?.text?.trim()) {
+    return NextResponse.json({ error: "text is required" }, { status: 400 });
   }
 
   try {
-    const result = await withTempDir(async (dir) => {
-      const articlePath = await writeTempFile(dir, "article.txt", text);
-      const stdout = await spawnScript("classify-aeo.mjs", [articlePath]);
-      return stdout;
+    const prompt = buildClassifyPrompt(body.contentTypeHint);
+    const client = getAnthropicClient();
+
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 4096,
+      system: prompt.system,
+      messages: [{ role: "user", content: prompt.userMessage(body.text) }],
     });
 
-    const report: AeoReport = JSON.parse(result);
-    const score = calcScore(report);
-    return NextResponse.json({ report, score } satisfies ClassifyResponse);
+    // Claude returns plain text — strip markdown code fences if present
+    const rawText = (message.content[0] as { text: string }).text.trim();
+    const jsonText = rawText.startsWith("```")
+      ? rawText.replace(/^```[a-z]*\n?/, "").replace(/\n?```$/, "")
+      : rawText;
+
+    const parsed = JSON.parse(jsonText) as {
+      detectedContentType: AnalysisReport["detectedContentType"];
+      contentTypeConfidence: AnalysisReport["contentTypeConfidence"];
+      results: CriterionResult[];
+    };
+
+    // Calculate scores from the results using all criteria definitions
+    const allCriteria = getAllCriteria();
+    const { aeoScore, geoScore, overallScore } = calcScores(
+      parsed.results,
+      allCriteria
+    );
+
+    const report: AnalysisReport = {
+      detectedContentType: parsed.detectedContentType,
+      contentTypeConfidence: parsed.contentTypeConfidence,
+      aeoScore,
+      geoScore,
+      overallScore,
+      results: parsed.results,
+    };
+
+    return NextResponse.json({ report } satisfies ClassifyResponse);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });

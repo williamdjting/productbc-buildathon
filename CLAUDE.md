@@ -1,29 +1,40 @@
 # buildathon-project
 
 ## Project Overview
-AEO (Answer Engine Optimization) toolkit. Node.js ESM CLI scripts + a Next.js web UI that use OpenAI's API to classify and improve articles for answer engine discoverability.
+AEO + GEO (Answer Engine / Generative Engine Optimization) toolkit. Node.js ESM CLI scripts + a Next.js web UI that use the Anthropic API (Claude Sonnet 4.6) to classify and improve articles for AI search discoverability.
 
 ## Repo Structure
 ```
 buildathon-project/
-  classify-aeo.mjs     — CLI: score article → JSON report
-  improve-aeo.mjs      — CLI: rewrite article to fix failing AEO criteria
+  classify-aeo.mjs     — CLI: score article → JSON report (OpenAI, standalone)
+  improve-aeo.mjs      — CLI: rewrite article to fix failing AEO criteria (OpenAI, standalone)
   compare-aeo.mjs      — CLI: diff two AEO JSON reports (-o flag for file output)
-  web/                 — Next.js 14 App Router web UI
-    .env.local         — OPENAI_API_KEY, FIRECRAWL_API_KEY (never commit)
+  web/                 — Next.js 16 App Router web UI
+    .env.local         — ANTHROPIC_API_KEY (never commit)
     src/
       app/
-        page.tsx       — main UI (classify → improve → reclassify → compare)
-        api/classify/  — POST: runs classify-aeo.mjs, returns { report, score }
-        api/improve/   — POST: runs improve-aeo.mjs, returns { revisedText }
-        api/compare/   — POST: runs compare-aeo.mjs -o, reads file, returns { text }
-        api/scrape/    — POST: Firecrawl scrape URL → markdown
-      components/      — FileUploader, UrlScraper, AeoReport, ScoreGauge, RevisedArticle, CompareView
+        page.tsx             — Step 1: Input (paste / upload / URL + content type)
+        analysis/page.tsx    — Step 2: AEO + GEO scores, improvement cards
+        optimized/page.tsx   — Step 3: Side-by-side diff + download (.txt / .md)
+        api/classify/        — POST { text, contentTypeHint? } → { report: AnalysisReport }
+        api/improve/         — POST { text, report } → { optimizedText }
+        api/scrape/          — POST { url } → { markdown } — uses Jina AI Reader (free)
+      components/
+        StepHeader.tsx       — sticky step indicator (1→2→3)
+        ContentTypeSelector.tsx — auto-detect + 5 manual types
+        ArticleInput.tsx     — tabbed: paste / file upload / URL scrape
+        ScoreRing.tsx        — SVG circular score (0–100, green/amber/red)
+        ImprovementCard.tsx  — single criterion result with Fix suggestion
+        DiffView.tsx         — side-by-side original vs optimized, synced scroll
+        ui/                  — shadcn/ui primitives (Button, Badge, Card)
       lib/
-        spawn-script.ts  — child_process.spawn wrapper → Promise<string>
-        temp-files.ts    — mkdtemp + cleanup
-        firecrawl.ts     — server-only Firecrawl singleton
-        types.ts         — AeoReport TypeScript interfaces
+        types.ts         — all TypeScript interfaces (single source of truth)
+        anthropic.ts     — Anthropic client singleton (server-only)
+        jina.ts          — Jina AI Reader scraper (server-only)
+        checklists.ts    — AEO/GEO criteria for all 5 content types
+        prompts.ts       — prompt builders for classify and improve
+        score.ts         — scoring: 0–100, na excluded, 60% AEO + 40% GEO
+        session.ts       — sessionStorage helpers (client-only)
         auth/index.ts    — placeholder (swap in Clerk/NextAuth)
         db/index.ts      — placeholder (swap in Prisma)
 ```
@@ -33,35 +44,57 @@ buildathon-project/
 cd web
 npm install
 # Fill in web/.env.local:
-#   OPENAI_API_KEY=sk-...
-#   FIRECRAWL_API_KEY=fc-...
+#   ANTHROPIC_API_KEY=sk-ant-...
 npm run dev   # http://localhost:3000
 ```
 
-## CLI Usage
+Use `.node-env/bin/npm` if `npm` is not on your PATH:
 ```bash
-export OPENAI_API_KEY="API_KEY"
+export PATH="/path/to/buildathon-project/.node-env/bin:$PATH"
+```
+
+## User Flow
+1. **/** — Paste text, upload `.txt`/`.md`, or enter a URL to scrape
+2. **/analysis** — See AEO score, GEO score, overall score, and per-criterion cards with specific fix suggestions
+3. **/optimized** — Side-by-side diff of original vs Claude-rewritten article, download as `.txt` or `.md`
+
+## Tech Stack
+- **Web** — Next.js 16 App Router, TypeScript, Tailwind CSS v4, shadcn/ui
+- **LLM** — Anthropic API (`claude-sonnet-4-6`) — 200K context, structured JSON output
+- **Scraping** — Jina AI Reader (`https://r.jina.ai/`) — free, no API key required
+- **State** — sessionStorage between pages (no database for v1)
+- **CLI** — Node.js ESM, uses OpenAI API independently (separate from the web UI)
+
+## Content Types Supported
+Auto-detected by Claude in the classify call. User can override.
+- `blog` — Blog posts, thought leadership, long-form educational
+- `product` — Product pages, SaaS feature pages
+- `landing` — Marketing pages, lead gen, service pages
+- `howto` — Tutorials, step-by-step guides
+- `news` — News articles, press releases, editorial
+
+## Scoring
+- AEO score + GEO score each 0–100, weighted by criterion impact
+- Overall = 60% AEO + 40% GEO
+- `na` criteria (not applicable to the detected content type) are excluded from the average
+- All defined in `lib/score.ts` and `lib/checklists.ts`
+
+## API Routes
+| Route | Method | Input | Output |
+|---|---|---|---|
+| `/api/classify` | POST | `{ text, contentTypeHint? }` | `{ report: AnalysisReport }` |
+| `/api/improve` | POST | `{ text, report }` | `{ optimizedText }` |
+| `/api/scrape` | POST | `{ url }` | `{ markdown }` |
+
+## CLI Usage (standalone, uses OpenAI)
+```bash
+export OPENAI_API_KEY="sk-..."
 
 node classify-aeo.mjs wrodium.txt > wrodium.json
 node improve-aeo.mjs wrodium.json wrodium.txt -o wrodium-revised.txt
 node classify-aeo.mjs wrodium-revised.txt > wrodium-revised-aeo.json
 node compare-aeo.mjs wrodium.json wrodium-revised-aeo.json
 ```
-
-## Tech Stack
-- **CLI** — Node.js ESM, no external dependencies, native `fetch` and `fs/promises`
-- **Web** — Next.js 14 App Router, TypeScript, Tailwind CSS, `@mendable/firecrawl-js`
-- **LLM** — OpenAI API (`gpt-4.1-mini`)
-
-## AEO Checklist Criteria
-1. One-paragraph answer near top (40–80 words)
-2. Question-style headings (e.g., "What is X?")
-3. FAQ or HowTo schema/section
-4. Consistent key concept definitions
-5. Fast, readable, accessible structure
-
-## Script Integration (web → CLI)
-API routes write uploaded content to `mkdtemp` temp files, spawn the `.mjs` script with those paths, capture stdout (or read `-o` output file for compare), clean up, and return JSON. Zero changes required to the CLI scripts when modifying the web UI.
 
 ## Adding Auth (additive, no rewrites)
 ```bash
@@ -75,12 +108,10 @@ npm install @clerk/nextjs
 ```bash
 npm install prisma @prisma/client
 # Replace web/src/lib/db/index.ts stub with PrismaClient
-# Schema: AnalysisSession { id, userId, originalText, aeoReport, revisedText }
+# Schema: AnalysisSession { id, userId, originalText, report, optimizedText, createdAt }
 ```
 
 ## Adding Stripe Payments (additive, no rewrites)
-Next.js App Router is fully supported by Stripe's official SDK and webhook pattern.
-
 ```bash
 npm install stripe @stripe/stripe-js
 ```
@@ -93,9 +124,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
 ```
 
 Integration points (all additive):
-- `web/src/lib/stripe.ts` — server-only Stripe singleton (`new Stripe(process.env.STRIPE_SECRET_KEY)`)
-- `web/src/app/api/stripe/checkout/route.ts` — creates a Checkout Session, redirects user to Stripe-hosted page
-- `web/src/app/api/stripe/webhook/route.ts` — receives `checkout.session.completed` events, updates user subscription status in DB
-- `web/src/middleware.ts` — gate `/api/classify`, `/api/improve`, `/api/compare` behind an active subscription check (one middleware file, no route changes)
-
-Recommended flow: free tier allows N classifies/day → Stripe Checkout for a subscription → webhook flips `user.isPro` in DB → middleware unlocks full access.
+- `web/src/lib/stripe.ts` — server-only Stripe singleton
+- `web/src/app/api/stripe/checkout/route.ts` — creates Checkout Session
+- `web/src/app/api/stripe/webhook/route.ts` — handles `checkout.session.completed`
+- `web/src/middleware.ts` — gates `/api/classify` and `/api/improve` behind active subscription

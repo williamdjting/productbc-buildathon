@@ -1,59 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { spawnScript } from "@/lib/spawn-script";
-import { withTempDir, writeTempFile } from "@/lib/temp-files";
-import type { ImproveResponse } from "@/lib/types";
+import { getAnthropicClient } from "@/lib/anthropic";
+import { buildImprovePrompt } from "@/lib/prompts";
+import type { ImproveRequest, ImproveResponse } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
-  let reportJson: string;
-  let articleText: string;
+  const body: ImproveRequest = await req.json().catch(() => null);
 
-  const contentType = req.headers.get("content-type") ?? "";
-
-  if (contentType.includes("multipart/form-data")) {
-    const form = await req.formData();
-    const reportFile = form.get("report");
-    const articleFile = form.get("article");
-    if (!reportFile || !articleFile) {
-      return NextResponse.json(
-        { error: "Both report and article are required" },
-        { status: 400 }
-      );
-    }
-    reportJson =
-      typeof reportFile === "string"
-        ? reportFile
-        : await (reportFile as File).text();
-    articleText =
-      typeof articleFile === "string"
-        ? articleFile
-        : await (articleFile as File).text();
-  } else {
-    const body = await req.json().catch(() => null);
-    if (!body?.report || !body?.articleText) {
-      return NextResponse.json(
-        { error: "Both report and articleText are required" },
-        { status: 400 }
-      );
-    }
-    reportJson =
-      typeof body.report === "string"
-        ? body.report
-        : JSON.stringify(body.report);
-    articleText = body.articleText;
+  if (!body?.text?.trim()) {
+    return NextResponse.json({ error: "text is required" }, { status: 400 });
+  }
+  if (!body?.report) {
+    return NextResponse.json({ error: "report is required" }, { status: 400 });
   }
 
   try {
-    const revisedText = await withTempDir(async (dir) => {
-      const jsonPath = await writeTempFile(dir, "report.json", reportJson);
-      const articlePath = await writeTempFile(dir, "article.txt", articleText);
-      const stdout = await spawnScript("improve-aeo.mjs", [
-        jsonPath,
-        articlePath,
-      ]);
-      return stdout.trim();
+    const prompt = buildImprovePrompt(body.report);
+    const client = getAnthropicClient();
+
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 8192,
+      system: prompt.system,
+      messages: [{ role: "user", content: prompt.userMessage(body.text) }],
     });
 
-    return NextResponse.json({ revisedText } satisfies ImproveResponse);
+    const optimizedText = (message.content[0] as { text: string }).text.trim();
+    return NextResponse.json({ optimizedText } satisfies ImproveResponse);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
