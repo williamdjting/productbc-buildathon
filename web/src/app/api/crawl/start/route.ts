@@ -28,6 +28,9 @@ export async function POST(req: NextRequest) {
     depth: body.depth ?? 3,
     source: body.source ?? "all",
     render: false,
+    options: {
+      includeSubdomains: true,
+    },
   };
 
   const res = await fetch(CF_BASE, {

@@ -27,6 +27,7 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
   const [total, setTotal] = useState(0);
   const [finished, setFinished] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [scraping, setScraping] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function stopPolling() {
@@ -133,11 +134,32 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
     });
   }
 
-  function handleUseSelected() {
+  async function handleUseSelected() {
     const toUse = someSelected
       ? completedUrls.filter((u) => selected.has(u.url)).map((u) => u.url)
       : completedUrls.map((u) => u.url);
-    onContent(toUse.join("\n"));
+
+    setScraping(true);
+    setError(null);
+    try {
+      const results = await Promise.all(
+        toUse.map((u) =>
+          fetch("/api/scrape", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: u }),
+          })
+            .then((r) => r.json())
+            .then((d) => d.markdown ?? "")
+            .catch(() => "")
+        )
+      );
+      onContent(results.filter(Boolean).join("\n\n---\n\n"));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setScraping(false);
+    }
   }
 
   return (
@@ -226,9 +248,10 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
             {completedUrls.length > 0 && (
               <button
                 onClick={handleUseSelected}
-                className="text-xs px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                disabled={scraping}
+                className="text-xs px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {someSelected ? `Use ${selected.size} selected` : "Use all"}
+                {scraping ? "Scraping…" : someSelected ? `Use ${selected.size} selected` : "Use all"}
               </button>
             )}
           </div>
