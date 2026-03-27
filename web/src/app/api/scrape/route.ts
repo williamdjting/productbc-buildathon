@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { scrapeUrl } from "@/lib/jina";
+import { fetchAndGradeMetadata } from "@/lib/metadata";
 import type { ScrapeRequest, ScrapeResponse } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
@@ -10,9 +11,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Basic validation — only allow http/https to prevent SSRF
+  let parsedUrl: URL;
   try {
-    const parsed = new URL(body.url);
-    if (!["http:", "https:"].includes(parsed.protocol)) {
+    parsedUrl = new URL(body.url);
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
       return NextResponse.json(
         { error: "Only http and https URLs are allowed" },
         { status: 400 }
@@ -23,8 +25,21 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const markdown = await scrapeUrl(body.url);
-    return NextResponse.json({ markdown } satisfies ScrapeResponse);
+    // Run Jina scrape and metadata fetch in parallel — metadata failure is non-fatal
+    const [markdownResult, metadataResult] = await Promise.allSettled([
+      scrapeUrl(body.url),
+      fetchAndGradeMetadata(parsedUrl.href),
+    ]);
+
+    if (markdownResult.status === "rejected") {
+      throw markdownResult.reason;
+    }
+
+    return NextResponse.json({
+      markdown: markdownResult.value,
+      metadataReport:
+        metadataResult.status === "fulfilled" ? metadataResult.value : undefined,
+    } satisfies ScrapeResponse);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });

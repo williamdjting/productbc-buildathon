@@ -1,15 +1,21 @@
 "use client";
 
 import { useState, useRef } from "react";
+import type { MetadataReport } from "@/lib/types";
 
 interface ArticleInputProps {
   onContent: (text: string) => void;
+  onMetadata?: (report: MetadataReport) => void;
   disabled?: boolean;
 }
 
 type Tab = "paste" | "file" | "url";
 
-export default function ArticleInput({ onContent, disabled }: ArticleInputProps) {
+export default function ArticleInput({
+  onContent,
+  onMetadata,
+  disabled,
+}: ArticleInputProps) {
   const [tab, setTab] = useState<Tab>("paste");
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
@@ -42,6 +48,7 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
       if (!res.ok) throw new Error(data.error ?? "Failed to fetch URL");
       setText(data.markdown);
       onContent(data.markdown);
+      if (data.metadataReport) onMetadata?.(data.metadataReport);
     } catch (err) {
       setUrlError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -60,7 +67,7 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
   return (
     <div className="space-y-3">
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-gray-200">
+      <div className="flex gap-1 border-b border-white/[0.07]">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -68,9 +75,9 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
             disabled={disabled}
             className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               tab === t.id
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            } disabled:opacity-50`}
+                ? "border-[#00D4A8] text-[#00D4A8]"
+                : "border-transparent text-[#6B7A99] hover:text-[#A0AABF]"
+            } disabled:opacity-40`}
           >
             {t.label}
           </button>
@@ -85,7 +92,7 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
           disabled={disabled}
           placeholder="Paste your article here..."
           rows={12}
-          className="w-full border border-gray-300 rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full bg-[#0C1018] border border-white/[0.08] rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[#00D4A8]/40 focus:border-[#00D4A8]/30 text-[#D4DBE8] placeholder:text-[#3D4A60] disabled:opacity-40 transition-colors font-mono"
         />
       )}
 
@@ -93,10 +100,10 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
       {tab === "file" && (
         <div
           onClick={() => !disabled && fileRef.current?.click()}
-          className={`border-2 border-dashed border-gray-300 rounded-lg p-10 text-center transition-colors ${
+          className={`border-2 border-dashed border-white/[0.08] rounded-lg p-10 text-center transition-colors ${
             disabled
-              ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer hover:border-gray-400"
+              ? "opacity-40 cursor-not-allowed"
+              : "cursor-pointer hover:border-[#00D4A8]/30 hover:bg-[rgba(0,212,168,0.03)]"
           }`}
         >
           <input
@@ -109,12 +116,13 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
               if (f) handleFile(f);
             }}
           />
-          <p className="text-sm text-gray-500">
-            Drop a <span className="font-mono">.txt</span> or{" "}
-            <span className="font-mono">.md</span> file, or click to browse
+          <p className="text-sm text-[#4A5670]">
+            Drop a{" "}
+            <span className="font-mono text-[#6B7A99]">.txt</span>{" "}or{" "}
+            <span className="font-mono text-[#6B7A99]">.md</span>{" "}file, or click to browse
           </p>
           {text && (
-            <p className="text-xs text-green-600 mt-2 font-medium">
+            <p className="text-xs text-[#00D4A8] mt-2 font-medium">
               File loaded ✓
             </p>
           )}
@@ -132,21 +140,21 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
               onKeyDown={(e) => e.key === "Enter" && handleScrape()}
               placeholder="https://example.com/article"
               disabled={disabled || urlLoading}
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="flex-1 bg-[#0C1018] border border-white/[0.08] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00D4A8]/40 focus:border-[#00D4A8]/30 text-[#D4DBE8] placeholder:text-[#3D4A60] disabled:opacity-40 transition-colors"
             />
             <button
               onClick={handleScrape}
               disabled={disabled || urlLoading || !url.trim()}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-[#00D4A8] text-[#03100D] text-sm font-semibold rounded-lg hover:bg-[#00BFA0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {urlLoading ? "Fetching…" : "Fetch"}
             </button>
           </div>
           {urlError && (
-            <p className="text-sm text-red-600">{urlError}</p>
+            <p className="text-sm text-[#F43F5E]">{urlError}</p>
           )}
           {text && !urlError && (
-            <p className="text-xs text-green-600 font-medium">
+            <p className="text-xs text-[#00D4A8] font-medium">
               Content loaded ✓
             </p>
           )}
@@ -155,7 +163,7 @@ export default function ArticleInput({ onContent, disabled }: ArticleInputProps)
 
       {/* Word count */}
       {text && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-[#3D4A60]">
           {wordCount.toLocaleString()} words
         </p>
       )}

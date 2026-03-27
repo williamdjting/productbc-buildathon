@@ -11,6 +11,11 @@ export async function scrapeUrl(url: string): Promise<string> {
   });
 
   if (!response.ok) {
+    if (response.status === 451) {
+      throw new Error(
+        "This URL is unavailable for legal reasons (HTTP 451). The site may be paywalled, geo-restricted, or blocking scrapers. Try pasting the article text directly instead."
+      );
+    }
     throw new Error(`Jina scrape failed with status ${response.status}`);
   }
 

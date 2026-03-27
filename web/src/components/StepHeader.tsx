@@ -11,44 +11,47 @@ export default function StepHeader({ step, onBack }: StepHeaderProps) {
   const router = useRouter();
 
   function handleBack() {
-    if (onBack) {
-      onBack();
-    } else {
-      router.back();
-    }
+    if (onBack) onBack();
+    else router.back();
   }
 
   return (
-    <div className="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-      <div className="w-16">
-        {step > 1 && (
+    <div className="sticky top-0 z-10 bg-[#0C1018]/90 backdrop-blur-md border-b border-white/[0.06] px-4 py-3 flex items-center justify-between">
+      {/* Logo / back */}
+      <div className="w-24">
+        {step > 1 ? (
           <button
             onClick={handleBack}
-            className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-colors"
+            className="text-sm text-[#6B7A99] hover:text-[#ECF0F8] flex items-center gap-1.5 transition-colors"
           >
             ← Back
           </button>
+        ) : (
+          <span className="font-display font-bold text-sm tracking-widest text-[#00D4A8]">
+            CR
+          </span>
         )}
       </div>
 
+      {/* Steps */}
       <div className="flex items-center gap-2">
-        {[1, 2, 3].map((n) => (
+        {([1, 2, 3] as const).map((n) => (
           <div key={n} className="flex items-center gap-2">
             <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors ${
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
                 n === step
-                  ? "bg-blue-600 text-white"
+                  ? "bg-[#00D4A8] text-[#03100D]"
                   : n < step
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-400"
+                  ? "bg-[#00D4A8]/20 text-[#00D4A8]"
+                  : "bg-white/[0.05] text-[#3D4A60]"
               }`}
             >
               {n < step ? "✓" : n}
             </div>
             {n < 3 && (
               <div
-                className={`w-8 h-0.5 ${
-                  n < step ? "bg-green-500" : "bg-gray-200"
+                className={`w-8 h-px ${
+                  n < step ? "bg-[#00D4A8]/40" : "bg-white/[0.07]"
                 }`}
               />
             )}
@@ -56,8 +59,8 @@ export default function StepHeader({ step, onBack }: StepHeaderProps) {
         ))}
       </div>
 
-      <div className="w-16 text-right">
-        <span className="text-xs text-gray-400">Step {step} of 3</span>
+      <div className="w-24 text-right">
+        <span className="text-xs text-[#3D4A60]">Step {step} / 3</span>
       </div>
     </div>
   );
