@@ -7,36 +7,12 @@ const OPTIONS: {
   label: string;
   description: string;
 }[] = [
-  {
-    value: "auto",
-    label: "Auto-detect",
-    description: "Claude identifies the type",
-  },
-  {
-    value: "blog",
-    label: "Blog post",
-    description: "Educational, long-form",
-  },
-  {
-    value: "product",
-    label: "Product page",
-    description: "Ecommerce, SaaS features",
-  },
-  {
-    value: "landing",
-    label: "Landing page",
-    description: "Marketing, lead gen",
-  },
-  {
-    value: "howto",
-    label: "How-to guide",
-    description: "Tutorials, step-by-step",
-  },
-  {
-    value: "news",
-    label: "News / editorial",
-    description: "Journalism, press releases",
-  },
+  { value: "auto", label: "Auto-detect", description: "Claude identifies the type" },
+  { value: "blog", label: "Blog post", description: "Educational, long-form" },
+  { value: "product", label: "Product page", description: "Ecommerce, SaaS features" },
+  { value: "landing", label: "Landing page", description: "Marketing, lead gen" },
+  { value: "howto", label: "How-to guide", description: "Tutorials, step-by-step" },
+  { value: "news", label: "News / editorial", description: "Journalism, press releases" },
 ];
 
 interface ContentTypeSelectorProps {
@@ -52,16 +28,18 @@ export default function ContentTypeSelector({
 }: ContentTypeSelectorProps) {
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium text-gray-700">Content type</p>
+      <p className="text-xs font-semibold text-[#6B7A99] uppercase tracking-wider">
+        Content type
+      </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {OPTIONS.map((opt) => (
           <label
             key={opt.value}
-            className={`flex flex-col gap-0.5 border rounded-lg p-3 cursor-pointer transition-colors ${
+            className={`flex flex-col gap-0.5 border rounded-lg p-3 cursor-pointer transition-all ${
               value === opt.value
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200 bg-white hover:border-gray-300"
-            } ${disabled ? "opacity-50 pointer-events-none" : ""}`}
+                ? "border-[#00D4A8]/50 bg-[rgba(0,212,168,0.07)]"
+                : "border-white/[0.07] bg-[#0C1018] hover:border-white/[0.14] hover:bg-[#121820]"
+            } ${disabled ? "opacity-40 pointer-events-none" : ""}`}
           >
             <input
               type="radio"
@@ -72,10 +50,14 @@ export default function ContentTypeSelector({
               onChange={() => onChange(opt.value)}
               disabled={disabled}
             />
-            <span className="text-sm font-medium text-gray-800">
+            <span
+              className={`text-sm font-semibold transition-colors ${
+                value === opt.value ? "text-[#00D4A8]" : "text-[#D4DBE8]"
+              }`}
+            >
               {opt.label}
             </span>
-            <span className="text-xs text-gray-500">{opt.description}</span>
+            <span className="text-xs text-[#4A5670]">{opt.description}</span>
           </label>
         ))}
       </div>

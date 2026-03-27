@@ -42,6 +42,24 @@ export interface AnalysisReport {
   results: CriterionResult[];
 }
 
+// ─── Metadata ─────────────────────────────────────────────────────────────────
+
+// One graded structured-data / head-metadata signal
+export interface MetadataGrade {
+  id: string;
+  title: string;
+  status: "pass" | "warn" | "fail";
+  reason: string;
+  suggestion: string;
+}
+
+// Report produced by fetching and parsing the raw HTML <head>
+// Only present when the user input was a URL
+export interface MetadataReport {
+  score: number; // 0–100
+  grades: MetadataGrade[];
+}
+
 // ─── Session ──────────────────────────────────────────────────────────────────
 
 // Everything stored in sessionStorage between the three pages
@@ -50,6 +68,7 @@ export interface SessionData {
   contentTypeHint: ContentTypeOrAuto; // what the user selected on the input page
   report: AnalysisReport;
   optimizedText?: string; // set after /api/improve completes
+  metadataReport?: MetadataReport;
 }
 
 // ─── API request / response shapes ───────────────────────────────────────────
@@ -78,4 +97,5 @@ export interface ScrapeRequest {
 
 export interface ScrapeResponse {
   markdown: string;
+  metadataReport?: MetadataReport;
 }

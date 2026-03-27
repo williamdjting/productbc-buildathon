@@ -40,17 +40,17 @@ export default function OptimizedPage() {
   const { originalText, optimizedText, report } = session;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <StepHeader step={3} />
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         {/* Header row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="fade-up-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="font-display text-xl font-bold text-[#ECF0F8]">
               Optimized Article
             </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-[#6B7A99] mt-0.5">
               Rewritten to improve your AEO and GEO scores
             </p>
           </div>
@@ -59,13 +59,13 @@ export default function OptimizedPage() {
           <div className="flex gap-2">
             <button
               onClick={() => download(optimizedText, "txt")}
-              className="px-4 py-2 border border-gray-300 bg-white text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-white/[0.1] bg-[#0C1018] text-[#A0AABF] text-sm rounded-lg hover:bg-[#121820] hover:text-[#D4DBE8] hover:border-white/[0.18] transition-colors"
             >
               Download .txt
             </button>
             <button
               onClick={() => download(optimizedText, "md")}
-              className="px-4 py-2 border border-gray-300 bg-white text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-white/[0.1] bg-[#0C1018] text-[#A0AABF] text-sm rounded-lg hover:bg-[#121820] hover:text-[#D4DBE8] hover:border-white/[0.18] transition-colors"
             >
               Download .md
             </button>
@@ -74,18 +74,18 @@ export default function OptimizedPage() {
 
         {/* Score delta banner */}
         {report && (
-          <div className="flex gap-6 bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm">
-            <span className="text-gray-500">
+          <div className="fade-up-2 flex gap-6 bg-[#0C1018] border border-white/[0.07] rounded-xl px-5 py-3 text-sm">
+            <span className="text-[#4A5670]">
               Pre-optimization scores —{" "}
-              <span className="font-semibold text-gray-800">
+              <span className="font-semibold text-[#D4DBE8]">
                 Overall: {report.overallScore}
               </span>
               {" · "}
-              <span className="font-medium text-blue-700">
+              <span className="font-medium text-[#00D4A8]">
                 AEO: {report.aeoScore}
               </span>
               {" · "}
-              <span className="font-medium text-purple-700">
+              <span className="font-medium text-[#A78BFA]">
                 GEO: {report.geoScore}
               </span>
             </span>
@@ -93,13 +93,15 @@ export default function OptimizedPage() {
         )}
 
         {/* Side-by-side diff */}
-        <DiffView original={originalText} optimized={optimizedText} />
+        <div className="fade-up-3">
+          <DiffView original={originalText} optimized={optimizedText} />
+        </div>
 
         {/* Start over */}
-        <div className="flex justify-center pt-2">
+        <div className="fade-up-4 flex justify-center pt-2">
           <button
             onClick={handleStartOver}
-            className="text-sm text-gray-500 hover:text-gray-700 underline transition-colors"
+            className="text-sm text-[#4A5670] hover:text-[#A0AABF] transition-colors"
           >
             ← Start over with a new article
           </button>

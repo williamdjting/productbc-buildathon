@@ -3,41 +3,43 @@ import type { CriterionResult, Criterion } from "@/lib/types";
 const STATUS_CONFIG = {
   pass: {
     icon: "✓",
-    containerClass: "border-green-200 bg-green-50",
-    iconClass: "text-green-600",
+    borderClass: "border-[#00D4A8]/20",
+    bgClass: "bg-[rgba(0,212,168,0.04)]",
+    iconClass: "text-[#00D4A8]",
     label: "Pass",
-    labelClass: "bg-green-100 text-green-700",
+    labelClass: "bg-[rgba(0,212,168,0.12)] text-[#00D4A8]",
   },
   warn: {
     icon: "⚠",
-    containerClass: "border-yellow-200 bg-yellow-50",
-    iconClass: "text-yellow-600",
+    borderClass: "border-amber-500/20",
+    bgClass: "bg-amber-500/[0.04]",
+    iconClass: "text-amber-400",
     label: "Warn",
-    labelClass: "bg-yellow-100 text-yellow-700",
+    labelClass: "bg-amber-500/10 text-amber-400",
   },
   fail: {
     icon: "✗",
-    containerClass: "border-red-200 bg-red-50",
-    iconClass: "text-red-600",
+    borderClass: "border-rose-500/20",
+    bgClass: "bg-rose-500/[0.04]",
+    iconClass: "text-rose-400",
     label: "Fail",
-    labelClass: "bg-red-100 text-red-700",
+    labelClass: "bg-rose-500/10 text-rose-400",
   },
   na: {
     icon: "–",
-    containerClass: "border-gray-100 bg-gray-50",
-    iconClass: "text-gray-400",
+    borderClass: "border-white/[0.05]",
+    bgClass: "bg-white/[0.02]",
+    iconClass: "text-[#3D4A60]",
     label: "N/A",
-    labelClass: "bg-gray-100 text-gray-500",
+    labelClass: "bg-white/[0.05] text-[#3D4A60]",
   },
 } as const;
 
 const IMPACT_CLASS = {
-  high: "bg-red-100 text-red-700",
-  medium: "bg-amber-100 text-amber-700",
-  low: "bg-gray-100 text-gray-600",
+  high: "bg-rose-500/10 text-rose-400",
+  medium: "bg-amber-500/10 text-amber-400",
+  low: "bg-white/[0.05] text-[#6B7A99]",
 } as const;
-
-const CATEGORY_CLASS = "bg-blue-100 text-blue-700";
 
 interface ImprovementCardProps {
   result: CriterionResult;
@@ -50,42 +52,35 @@ export default function ImprovementCard({
 }: ImprovementCardProps) {
   const cfg = STATUS_CONFIG[result.status];
 
-  // Collapse N/A cards — they're not useful to the user
   if (result.status === "na") return null;
 
   return (
-    <div className={`border rounded-lg p-4 space-y-2 ${cfg.containerClass}`}>
+    <div className={`border rounded-lg p-4 space-y-2 ${cfg.borderClass} ${cfg.bgClass}`}>
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <span className={`text-base font-bold flex-shrink-0 ${cfg.iconClass}`}>
             {cfg.icon}
           </span>
-          <p className="text-sm font-semibold text-gray-800 leading-snug">
+          <p className="text-sm font-semibold text-[#D4DBE8] leading-snug">
             {criterion.title}
           </p>
         </div>
         <div className="flex gap-1.5 flex-shrink-0">
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-medium ${cfg.labelClass}`}
-          >
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${cfg.labelClass}`}>
             {cfg.label}
           </span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-medium ${IMPACT_CLASS[criterion.impact]}`}
-          >
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${IMPACT_CLASS[criterion.impact]}`}>
             {criterion.impact}
           </span>
-          <span
-            className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_CLASS}`}
-          >
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[rgba(0,212,168,0.1)] text-[#00D4A8]">
             {criterion.category.toUpperCase()}
           </span>
         </div>
       </div>
 
       {/* Reason */}
-      <p className="text-xs text-gray-600 leading-relaxed">{result.reason}</p>
+      <p className="text-xs text-[#6B7A99] leading-relaxed">{result.reason}</p>
 
       {/* Evidence quotes */}
       {result.evidence.length > 0 && (
@@ -93,7 +88,7 @@ export default function ImprovementCard({
           {result.evidence.map((e, i) => (
             <p
               key={i}
-              className="text-xs font-mono bg-white bg-opacity-70 rounded px-2 py-1 text-gray-700 border border-white border-opacity-50 truncate"
+              className="text-xs font-mono bg-black/30 rounded px-2 py-1 text-[#7A8BA8] border border-white/[0.05] truncate"
               title={e}
             >
               &ldquo;{e}&rdquo;
@@ -102,10 +97,10 @@ export default function ImprovementCard({
         </div>
       )}
 
-      {/* Suggestion — only shown for warn/fail */}
+      {/* Suggestion */}
       {result.suggestion && (
-        <div className="text-xs text-gray-800 bg-white bg-opacity-60 rounded px-3 py-2 border border-current border-opacity-10">
-          <span className="font-semibold">Fix: </span>
+        <div className="text-xs text-[#A0AABF] bg-black/20 rounded px-3 py-2 border border-white/[0.05]">
+          <span className="font-semibold text-[#D4DBE8]">Fix: </span>
           {result.suggestion}
         </div>
       )}
