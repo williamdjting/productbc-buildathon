@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import type { MetadataReport } from "@/lib/types";
+import BulkUrlScrape from "./BulkUrlScrape";
 
 interface ArticleInputProps {
   onContent: (text: string) => void;
@@ -9,7 +9,7 @@ interface ArticleInputProps {
   disabled?: boolean;
 }
 
-type Tab = "paste" | "file" | "url";
+type Tab = "paste" | "file" | "url" | "bulk";
 
 export default function ArticleInput({
   onContent,
@@ -62,6 +62,7 @@ export default function ArticleInput({
     { id: "paste", label: "Paste text" },
     { id: "file", label: "Upload file" },
     { id: "url", label: "Scrape URL" },
+    { id: "bulk", label: "Bulk Scrape" },
   ];
 
   return (
@@ -161,9 +162,14 @@ export default function ArticleInput({
         </div>
       )}
 
+      {/* Bulk URL scraper */}
+      {tab === "bulk" && (
+        <BulkUrlScrape onContent={onContent} disabled={disabled} />
+      )}
+
       {/* Word count */}
-      {text && (
-        <p className="text-xs text-[#3D4A60]">
+      {text && tab !== "bulk" && (
+        <p className="text-xs text-gray-400">
           {wordCount.toLocaleString()} words
         </p>
       )}
