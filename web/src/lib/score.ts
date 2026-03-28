@@ -4,7 +4,7 @@ import type { Criterion, CriterionResult } from "./types";
 // "na" is null — these criteria are excluded from the average entirely.
 const STATUS_MULTIPLIER: Record<string, number | null> = {
   pass: 1,
-  warn: 0.5,
+  warn: 0.7,
   fail: 0,
   na: null, // excluded — not counted as 0
 };

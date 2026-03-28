@@ -240,9 +240,7 @@ export default function AnalysisPage() {
             disabled={loading}
             className="w-full py-3 bg-[#00D4A8] text-[#03100D] font-semibold rounded-lg hover:bg-[#00BFA0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-sm tracking-wide"
           >
-            {loading
-              ? "Optimizing… (this may take 20–30s)"
-              : "Optimize Article →"}
+            {loading ? "Optimizing…" : "Optimize Article →"}
           </button>
         </div>
       </main>

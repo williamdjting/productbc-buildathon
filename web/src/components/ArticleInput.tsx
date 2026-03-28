@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import BulkUrlScrape from "./BulkUrlScrape";
+import type { MetadataReport } from "@/lib/types";
 
 interface ArticleInputProps {
   onContent: (text: string) => void;
@@ -169,7 +170,7 @@ export default function ArticleInput({
 
       {/* Word count */}
       {text && tab !== "bulk" && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-[#3D4A60]">
           {wordCount.toLocaleString()} words
         </p>
       )}

@@ -126,10 +126,10 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
     }
   }
 
-  function toggleOne(url: string) {
+  function toggleOne(urlStr: string) {
     setSelected((prev) => {
       const next = new Set(prev);
-      next.has(url) ? next.delete(url) : next.add(url);
+      next.has(urlStr) ? next.delete(urlStr) : next.add(urlStr);
       return next;
     });
   }
@@ -164,7 +164,7 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
 
   return (
     <div className="space-y-3">
-      {/* URL input */}
+      {/* URL + limit input */}
       <div className="flex gap-2">
         <input
           type="url"
@@ -173,7 +173,7 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
           onKeyDown={(e) => e.key === "Enter" && !isRunning && handleAnalyze()}
           placeholder="https://example.com"
           disabled={disabled || isRunning}
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="flex-1 bg-[#0C1018] border border-white/[0.08] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#00D4A8]/40 focus:border-[#00D4A8]/30 text-[#D4DBE8] placeholder:text-[#3D4A60] disabled:opacity-40 transition-colors"
         />
         <input
           type="number"
@@ -181,9 +181,9 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
           onChange={(e) => setLimit(Math.max(1, Math.min(1000, Number(e.target.value))))}
           disabled={disabled || isRunning}
           title="Max pages to crawl"
-          className="w-20 border border-gray-300 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-20 bg-[#0C1018] border border-white/[0.08] rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-1 focus:ring-[#00D4A8]/40 text-[#D4DBE8] disabled:opacity-40 transition-colors"
         />
-        <span className="self-center text-xs text-gray-400 shrink-0">limit</span>
+        <span className="self-center text-xs text-[#3D4A60] shrink-0">limit</span>
       </div>
 
       {/* Action buttons */}
@@ -191,14 +191,14 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
         <button
           onClick={handleAnalyze}
           disabled={disabled || isRunning || !url.trim()}
-          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-4 py-2 bg-[#00D4A8] text-[#03100D] text-sm font-semibold rounded-lg hover:bg-[#00BFA0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          {jobStatus === "starting" ? "Starting…" : isRunning ? "Crawling…" : "Analyze"}
+          {jobStatus === "starting" ? "Starting…" : isRunning ? "Crawling…" : "Crawl"}
         </button>
         {isRunning && (
           <button
             onClick={handleCancel}
-            className="px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-3 py-2 text-sm text-[#6B7A99] border border-white/[0.1] rounded-lg hover:bg-white/[0.04] hover:text-[#A0AABF] transition-colors"
           >
             Cancel
           </button>
@@ -207,8 +207,10 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
 
       {/* Progress */}
       {(isRunning || jobStatus === "completed") && (
-        <div className="text-xs text-gray-500 flex items-center gap-2">
-          {isRunning && <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse" />}
+        <div className="text-xs text-[#6B7A99] flex items-center gap-2">
+          {isRunning && (
+            <span className="inline-block w-2 h-2 rounded-full bg-[#00D4A8] animate-pulse" />
+          )}
           <span>
             {jobStatus === "completed"
               ? `Done — ${total} URLs discovered, ${completedUrls.length} crawled`
@@ -218,11 +220,13 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
       )}
 
       {/* Error */}
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-[#F43F5E]">{error}</p>}
 
       {/* Cancelled */}
       {jobStatus === "cancelled" && (
-        <p className="text-xs text-amber-600">Crawl cancelled — {completedUrls.length} URLs collected so far</p>
+        <p className="text-xs text-amber-400">
+          Crawl cancelled — {completedUrls.length} URLs collected so far
+        </p>
       )}
 
       {/* Results list */}
@@ -235,9 +239,9 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
                 type="checkbox"
                 checked={allSelected}
                 onChange={toggleSelectAll}
-                className="w-3.5 h-3.5 rounded accent-blue-600"
+                className="w-3.5 h-3.5 rounded accent-[#00D4A8]"
               />
-              <span className="text-xs text-gray-600">
+              <span className="text-xs text-[#6B7A99]">
                 {someSelected
                   ? `${selected.size} of ${completedUrls.length} selected`
                   : `${completedUrls.length} URL${completedUrls.length !== 1 ? "s" : ""} found`}
@@ -249,7 +253,7 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
               <button
                 onClick={handleUseSelected}
                 disabled={scraping}
-                className="text-xs px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-xs px-2.5 py-1 bg-[#00D4A8] text-[#03100D] font-semibold rounded hover:bg-[#00BFA0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {scraping ? "Scraping…" : someSelected ? `Use ${selected.size} selected` : "Use all"}
               </button>
@@ -257,7 +261,7 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
           </div>
 
           {/* URL list */}
-          <ul className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg divide-y divide-gray-100 text-xs">
+          <ul className="max-h-64 overflow-y-auto bg-[#0C1018] border border-white/[0.07] rounded-lg divide-y divide-white/[0.04] text-xs">
             {urls.map((u, i) => {
               const isCompleted = u.status === "completed";
               const isChecked = selected.has(u.url);
@@ -265,7 +269,9 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
                 <li
                   key={i}
                   onClick={() => isCompleted && toggleOne(u.url)}
-                  className={`flex items-center gap-2 px-3 py-1.5 ${isCompleted ? "cursor-pointer hover:bg-gray-50" : ""} ${isChecked ? "bg-blue-50" : ""}`}
+                  className={`flex items-center gap-2 px-3 py-1.5 transition-colors ${
+                    isCompleted ? "cursor-pointer hover:bg-white/[0.03]" : ""
+                  } ${isChecked ? "bg-[rgba(0,212,168,0.06)]" : ""}`}
                 >
                   {isCompleted ? (
                     <input
@@ -273,10 +279,10 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
                       checked={isChecked}
                       onChange={() => toggleOne(u.url)}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-3.5 h-3.5 shrink-0 rounded accent-blue-600"
+                      className="w-3.5 h-3.5 shrink-0 rounded accent-[#00D4A8]"
                     />
                   ) : (
-                    <span className={u.status === "errored" ? "text-red-400 shrink-0" : "text-gray-300 shrink-0"}>
+                    <span className={u.status === "errored" ? "text-rose-400 shrink-0" : "text-[#3D4A60] shrink-0"}>
                       {u.status === "errored" ? "✗" : "○"}
                     </span>
                   )}
@@ -285,12 +291,12 @@ export default function BulkUrlScrape({ onContent, disabled }: BulkUrlScrapeProp
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="truncate text-blue-600 hover:underline"
+                    className="truncate text-[#00D4A8] hover:underline"
                   >
                     {u.url}
                   </a>
                   {u.httpStatus && (
-                    <span className="ml-auto shrink-0 text-gray-400">{u.httpStatus}</span>
+                    <span className="ml-auto shrink-0 text-[#3D4A60]">{u.httpStatus}</span>
                   )}
                 </li>
               );

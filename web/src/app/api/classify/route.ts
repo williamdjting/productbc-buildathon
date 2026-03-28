@@ -21,11 +21,19 @@ export async function POST(req: NextRequest) {
     const prompt = buildClassifyPrompt(body.contentTypeHint);
     const client = getAnthropicClient();
 
+    // Truncate very long articles — 30 000 chars (~5 000 words) is plenty to
+    // evaluate all AEO/GEO criteria. This keeps input tokens predictable and
+    // prevents multi-minute waits on large scraped pages.
+    const inputText =
+      body.text.length > 30000 ? body.text.slice(0, 30000) : body.text;
+
+    // max_tokens raised to 8192 to prevent response truncation (which
+    // previously caused scores of 0 on verbose responses).
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: prompt.system,
-      messages: [{ role: "user", content: prompt.userMessage(body.text) }],
+      messages: [{ role: "user", content: prompt.userMessage(inputText) }],
     });
 
     // Claude returns plain text — strip markdown code fences if present
