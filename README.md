@@ -1,3 +1,5 @@
+# We won 1st place in this hackathon :)
+
 # buildathon-project
 
 AEO (Answer Engine Optimization) toolkit — classify, improve, and compare articles for answer engine discoverability. Available as both a CLI and a web UI.
